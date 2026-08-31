@@ -8,6 +8,12 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Serif:wght@600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../app/styles.css?v=10">
+<style>
+  .pw-overlay{position:fixed;inset:0;background:rgba(21,32,43,.45);display:flex;align-items:center;justify-content:center;z-index:90}
+  .pw-overlay[hidden]{display:none}
+  .pw-card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:22px 24px;width:min(400px,92vw)}
+  .pw-card b{font-size:17px}
+</style>
 </head>
 <body class="ops">
 <header class="ops-top">
@@ -23,6 +29,7 @@
     </label>
     <a class="btn btn-ghost" href="kids.html">Kids desk</a>
     <a class="btn btn-ghost" href="sunday.html" target="_blank" rel="noopener">Sunday screen</a>
+    <button class="btn btn-ghost" id="btnPw">Password</button>
     <button class="btn btn-ghost" id="btnOut">Sign out</button>
   </div>
 </header>
@@ -65,11 +72,24 @@
   </div>
 </aside>
 
+<div class="pw-overlay" id="pwOverlay" hidden>
+  <div class="pw-card">
+    <b>Change password</b>
+    <div class="field"><label>New password</label><input id="pwNew" type="password" autocomplete="new-password"></div>
+    <div class="field"><label>Confirm new password</label><input id="pwConfirm" type="password" autocomplete="new-password"></div>
+    <p class="tiny" id="pwMsg" style="min-height:18px;margin:0 0 12px"></p>
+    <div style="display:flex;gap:10px;justify-content:flex-end">
+      <button class="btn btn-ghost" id="pwCancel" type="button">Cancel</button>
+      <button class="btn btn-ink" id="pwSave" type="button">Save</button>
+    </div>
+  </div>
+</div>
+
 <script src="../app/gcc-config.js?v=10"></script>
 <script src="../app/gcc-data.js?v=10"></script>
 <script src="gcc-ops.js?v=10"></script>
 <script src="gcc-visitors.js?v=10"></script>
 <script src="gcc-grace-voice.js?v=10"></script>
-<script type="module" src="staff-app.js?v=10"></script>
+<script type="module" src="staff-app.js?v=11"></script>
 </body>
 </html>

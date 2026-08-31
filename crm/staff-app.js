@@ -1,4 +1,4 @@
-import { gccAuthGuard, gccSignOut } from './auth.js';
+import { gccAuthGuard, gccSignOut, gccSupabase } from './auth.js';
 
 const C = window.GCC, D = window.GCCData, Ops = window.GCCOps, Grace = window.GCCGrace, V = window.GCCVisitors;
 const $ = (id) => document.getElementById(id);
@@ -12,6 +12,35 @@ if (gccRole === 'gcc_kids') {
 }
 
 $('btnOut').onclick = preview ? () => location.href = '../index.html' : gccSignOut;
+
+// Change password: any signed-in staff account, no old password needed
+// (updateUser rides the live session). Hidden in preview — there is no user.
+if (preview) {
+  $('btnPw').style.display = 'none';
+} else {
+  const pwOverlay = $('pwOverlay');
+  $('btnPw').onclick = () => {
+    $('pwNew').value = '';
+    $('pwConfirm').value = '';
+    $('pwMsg').textContent = '';
+    pwOverlay.hidden = false;
+    $('pwNew').focus();
+  };
+  $('pwCancel').onclick = () => { pwOverlay.hidden = true; };
+  pwOverlay.addEventListener('click', (e) => { if (e.target === pwOverlay) pwOverlay.hidden = true; });
+  $('pwSave').onclick = async () => {
+    const pw = $('pwNew').value, confirm = $('pwConfirm').value, msg = $('pwMsg');
+    if (pw.length < 8) { msg.textContent = 'Use at least 8 characters.'; return; }
+    if (pw !== confirm) { msg.textContent = 'Passwords do not match.'; return; }
+    $('pwSave').disabled = true;
+    msg.textContent = 'Saving…';
+    const { error } = await gccSupabase.auth.updateUser({ password: pw });
+    $('pwSave').disabled = false;
+    if (error) { msg.textContent = error.message; return; }
+    msg.textContent = 'Password changed.';
+    setTimeout(() => { pwOverlay.hidden = true; }, 900);
+  };
+}
 if (preview) {
   document.querySelectorAll('a[href="kids.html"]').forEach((a) => { a.href = 'kids.html?preview=1'; });
   document.querySelectorAll('a[href="staff.html"]').forEach((a) => { a.href = 'staff.html?preview=1'; });
