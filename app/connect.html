@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Connect · GateWay City Church</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#FAFAF8;
+    --ink:#1A1917;
+    --ink-soft:#3F3C38;
+    --gold:#A68B5B;
+    --gold-soft:#C4A974;
+    --gold-wash:rgba(166,139,91,0.10);
+    --navy:#1C2430;
+    --navy-deep:#121820;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    font-family:'Manrope',sans-serif;
+    background:var(--paper);
+    color:var(--ink);
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:32px 16px;
+  }
+  .card{
+    width:100%;
+    max-width:460px;
+  }
+  .crest{text-align:center;margin-bottom:28px}
+  .crest img{height:52px}
+  .crest .kicker{
+    font-size:11px;letter-spacing:0.22em;text-transform:uppercase;
+    color:var(--gold);margin-top:12px;font-weight:600;
+  }
+  .crest h1{
+    font-family:'Cormorant Garamond',serif;
+    font-size:34px;font-weight:500;margin-top:6px;
+  }
+  .crest p{color:var(--ink-soft);font-size:14px;margin-top:6px;line-height:1.6}
+  form{
+    background:#fff;
+    border:1px solid rgba(26,25,23,0.08);
+    border-radius:14px;
+    padding:28px 24px;
+    box-shadow:0 20px 50px rgba(28,36,48,0.08);
+  }
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  label{
+    display:block;
+    font-size:11px;letter-spacing:0.14em;text-transform:uppercase;
+    color:var(--ink-soft);font-weight:600;
+    margin:16px 0 6px;
+  }
+  label:first-child{margin-top:0}
+  .row label{margin-top:0}
+  input,select,textarea{
+    width:100%;
+    font-family:inherit;font-size:15px;color:var(--ink);
+    background:var(--paper);
+    border:1px solid rgba(26,25,23,0.14);
+    border-radius:9px;
+    padding:12px 14px;
+    outline:none;
+  }
+  input:focus,select:focus,textarea:focus{border-color:var(--gold)}
+  textarea{min-height:88px;resize:vertical}
+  .service{display:flex;gap:10px;margin-top:6px}
+  .service input{display:none}
+  .service span{
+    flex:1;text-align:center;padding:11px 0;
+    border:1px solid rgba(26,25,23,0.14);border-radius:9px;
+    font-size:14px;font-weight:600;cursor:pointer;display:block;
+  }
+  .service input:checked + span{
+    background:var(--navy);color:#fff;border-color:var(--navy);
+  }
+  button{
+    width:100%;margin-top:22px;
+    font-family:inherit;font-size:15px;font-weight:700;letter-spacing:0.04em;
+    background:var(--navy);color:#fff;
+    border:none;border-radius:9px;padding:15px 0;cursor:pointer;
+  }
+  button:hover{background:var(--navy-deep)}
+  button[disabled]{opacity:0.6;cursor:default}
+  .error{color:#9c3a2e;font-size:13px;margin-top:12px;display:none}
+  .done{display:none;text-align:center;background:#fff;border:1px solid rgba(26,25,23,0.08);border-radius:14px;padding:44px 28px;box-shadow:0 20px 50px rgba(28,36,48,0.08)}
+  .done .mark{font-family:'Cormorant Garamond',serif;font-size:40px;color:var(--gold)}
+  .done h2{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:500;margin-top:10px}
+  .done p{color:var(--ink-soft);font-size:14px;line-height:1.7;margin-top:10px}
+  .done a{color:var(--gold);font-weight:600;text-decoration:none}
+  .foot{text-align:center;font-size:12px;color:var(--ink-soft);margin-top:20px}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="crest">
+    <img src="assets/gateway-logo.png" alt="GateWay City Church">
+    <div class="kicker">Las Vegas · Connection Card</div>
+    <h1>So glad you're here.</h1>
+    <p>Tell us a little about yourself and we'll take it from there. No pressure, ever.</p>
+  </div>
+
+  <form id="connectForm">
+    <div class="row">
+      <div>
+        <label for="firstName">First name *</label>
+        <input id="firstName" required autocomplete="given-name" placeholder="First">
+      </div>
+      <div>
+        <label for="lastName">Last name *</label>
+        <input id="lastName" required autocomplete="family-name" placeholder="Last">
+      </div>
+    </div>
+    <label for="phone">Phone</label>
+    <input id="phone" type="tel" autocomplete="tel" placeholder="(702) 555-0000">
+    <label for="email">Email</label>
+    <input id="email" type="email" autocomplete="email" placeholder="you@example.com">
+    <label for="howHeard">How did you hear about us?</label>
+    <select id="howHeard">
+      <option value="">Choose one</option>
+      <option value="friend">A friend or family member</option>
+      <option value="social_media">Social media</option>
+      <option value="google">Google search</option>
+      <option value="drove_by">Driving by</option>
+      <option value="other">Other</option>
+    </select>
+    <label>Which service did you join?</label>
+    <div class="service">
+      <label><input type="radio" name="service" value="english" checked><span>English · 10 AM</span></label>
+      <label><input type="radio" name="service" value="spanish"><span>Español · 1 PM</span></label>
+    </div>
+    <label for="prayer">Anything we can pray with you about?</label>
+    <textarea id="prayer" placeholder="Optional, and kept between you and the pastors."></textarea>
+    <button type="submit" id="submitBtn">Connect with us</button>
+    <p class="error" id="errorMsg"></p>
+  </form>
+
+  <div class="done" id="doneCard">
+    <div class="mark">✝</div>
+    <h2 id="doneTitle">Welcome home.</h2>
+    <p id="doneBody">We're so glad you came. Keep an eye on your phone and inbox, someone from our team will reach out personally.</p>
+    <p><a href="index.html">Open the GateWay app</a></p>
+  </div>
+
+  <p class="foot">GateWay City Church · 3630 N Rancho Dr, Las Vegas</p>
+</div>
+
+<script src="gcc-config.js?v=10"></script>
+<script>
+(function () {
+  var C = window.GCC;
+  var FN = C.SUPABASE_URL + '/functions/v1/gcc-grace';
+  var form = document.getElementById('connectForm');
+  var btn = document.getElementById('submitBtn');
+  var err = document.getElementById('errorMsg');
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    err.style.display = 'none';
+    btn.disabled = true;
+    btn.textContent = 'One moment...';
+
+    var first = document.getElementById('firstName').value.trim();
+    var last = document.getElementById('lastName').value.trim();
+    var service = document.querySelector('input[name="service"]:checked');
+    var payload = {
+      action: 'intake',
+      name: (first + ' ' + last).trim(),
+      phone: document.getElementById('phone').value.trim() || null,
+      email: document.getElementById('email').value.trim() || null,
+      how_heard: document.getElementById('howHeard').value || null,
+      prayer_request: document.getElementById('prayer').value.trim() || null,
+      service_preference: service ? service.value : 'english'
+    };
+
+    fetch(FN, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        apikey: C.SUPABASE_ANON_KEY,
+        Authorization: 'Bearer ' + C.SUPABASE_ANON_KEY
+      },
+      body: JSON.stringify(payload)
+    }).then(function (res) {
+      return res.json().then(function (data) { return { ok: res.ok, data: data }; });
+    }).then(function (r) {
+      if (!r.ok) throw new Error((r.data && r.data.error) || 'Something went wrong');
+      if (r.data.is_returning) {
+        document.getElementById('doneTitle').textContent = 'Welcome back!';
+        document.getElementById('doneBody').textContent = "It's so good to see you again. We've noted your visit and the team knows you're here.";
+      }
+      form.style.display = 'none';
+      document.getElementById('doneCard').style.display = 'block';
+    }).catch(function (e2) {
+      err.textContent = e2.message || 'Something went wrong. Please try again.';
+      err.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Connect with us';
+    });
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,6 +1,6 @@
 import { gccAuthGuard, gccSignOut } from './auth.js';
 
-const C = window.GCC, D = window.GCCData, Ops = window.GCCOps, Grace = window.GCCGrace;
+const C = window.GCC, D = window.GCCData, Ops = window.GCCOps, Grace = window.GCCGrace, V = window.GCCVisitors;
 const $ = (id) => document.getElementById(id);
 const preview = new URLSearchParams(location.search).get('preview') === '1';
 const session = preview ? { preview: true } : await gccAuthGuard();
@@ -18,9 +18,11 @@ if (preview) {
 
 Ops.usePreview(preview);
 if (session.access_token) Ops.setAuth(session.access_token, session.user.app_metadata && session.user.app_metadata.role);
+V.usePreview(preview);
+if (session.access_token) V.setAuth(session.access_token);
 
 let filter = 'all', query = '', selected = null, people = [];
-let famSelected = null, kidSelected = null, autoSelected = null;
+let famSelected = null, kidSelected = null, autoSelected = null, visSelected = null, visInsight = null;
 
 const today = () => new Date().toLocaleDateString('en-CA', { timeZone: 'America/Los_Angeles' });
 const ago = (iso) => {
@@ -122,6 +124,7 @@ function visiblePeople() {
 }
 
 function renderList() {
+  if (filter === 'visitors') return renderVisitorList();
   if (filter === 'hello') return renderHelloList();
   if (filter === 'family') return renderFamilyList();
   if (filter === 'kids') return renderKidsList();
@@ -145,7 +148,7 @@ function renderList() {
 function countHead() {
   const here = people.filter((p) => p.here).length;
   const kidsIn = Ops.roster().length;
-  $('headCount').textContent = here + ' in the house · ' + kidsIn + ' in class · ' + people.length + ' on file';
+  $('headCount').textContent = here + ' in the house · ' + kidsIn + ' in class · ' + people.length + ' on file · ' + V.data().visitors.length + ' visitors';
 }
 
 function renderFamilyList() {
@@ -356,7 +359,219 @@ function renderAutoFile() {
   };
 }
 
+// ---------- Visitors (Grace CRM) ----------
+
+const HOW_HEARD = { friend: 'A friend', social_media: 'Social media', google: 'Google', drove_by: 'Driving by', other: 'Word of mouth' };
+const NOTE_TAGS = ['', 'first-time', 'needs-follow-up', 'connected-with-pastor', 'prayer-request', 'new-believer', 'volunteer-interest'];
+
+function visitorList() {
+  const q = query.trim().toLowerCase();
+  return V.data().visitors.filter((v) => {
+    if (!q) return true;
+    return (v.name || '').toLowerCase().includes(q) || (v.phone || '').includes(q) || (v.email || '').toLowerCase().includes(q);
+  });
+}
+
+function renderVisitorList() {
+  const list = visitorList();
+  $('people').innerHTML = `
+    <button class="person" id="visAdd" style="justify-content:center"><span class="nm">+ Add a visitor</span></button>` +
+    (list.map((v) => {
+      const rel = V.forVisitor(v.id);
+      const urgent = rel.notes.some((n) => n.tag === 'urgent');
+      return `<button class="person ${visSelected && visSelected.id === v.id ? 'on' : ''}" data-vid="${esc(v.id)}">
+      <span class="initials">${esc(ini(v.name))}</span>
+      <span>
+        <span class="nm">${esc(v.name)}</span>
+        <span class="meta">${v.is_returning ? 'Returning' : 'First time'}${v.prayer_request ? ' · <span class="mark-pray">Prayer</span>' : ''}${urgent ? ' · <span class="mark-pray">Urgent</span>' : ''}</span>
+      </span>
+      <span class="when">${ago(v.last_activity_at || v.created_at)}</span>
+    </button>`;
+    }).join('') || '<p class="ops-empty">No visitors yet. They land here from the connection card.</p>');
+  $('people').querySelectorAll('[data-vid]').forEach((btn) => {
+    btn.onclick = () => {
+      visSelected = V.data().visitors.find((v) => v.id === btn.dataset.vid);
+      visInsight = null;
+      renderVisitorList();
+      renderVisitorFile();
+    };
+  });
+  $('visAdd').onclick = () => { visSelected = null; visInsight = null; renderVisitorList(); renderVisitorAdd(); };
+  countHead();
+}
+
+function renderVisitorAdd() {
+  $('file').innerHTML = `
+    <p class="tiny">Grace CRM</p>
+    <h1>Add a visitor</h1>
+    <div class="ops-block">
+      <div class="desk-form">
+        <input id="nvName" placeholder="Full name">
+        <input id="nvPhone" placeholder="Phone">
+        <input id="nvEmail" placeholder="Email">
+      </div>
+      <div class="desk-form" style="margin-top:8px">
+        <select id="nvHeard"><option value="">How they heard</option>${Object.entries(HOW_HEARD).map(([k, l]) => `<option value="${k}">${l}</option>`).join('')}</select>
+        <select id="nvService"><option value="english">English service</option><option value="spanish">Spanish service</option></select>
+        <button class="btn btn-ink" id="nvSave">Save</button>
+      </div>
+      <p class="tiny" style="margin-top:8px">Manual adds skip the welcome email and the pastor text.</p>
+    </div>`;
+  $('nvSave').onclick = async () => {
+    const name = $('nvName').value.trim();
+    if (!name) return;
+    await V.addVisitor({ name, phone: $('nvPhone').value.trim() || null, email: $('nvEmail').value.trim() || null, how_heard: $('nvHeard').value || null, service_preference: $('nvService').value });
+    await V.loadAll();
+    visSelected = null;
+    renderVisitorList();
+    $('file').innerHTML = '<p class="ops-empty">Saved. Select the visitor on the left.</p>';
+  };
+}
+
+function renderVisitorFile() {
+  const v = visSelected;
+  if (!v) { $('file').innerHTML = '<p class="ops-empty">Select a visitor, or add one.</p>'; return; }
+  const rel = V.forVisitor(v.id);
+  const emailsSorted = rel.emails.slice().sort((a, b) => (b.sent_at || '').localeCompare(a.sent_at || ''));
+  $('file').innerHTML = `
+    <p class="tiny">${v.is_returning ? 'Returning visitor' : 'First-time visitor'} · first came ${esc((v.created_at || '').slice(0, 10))}</p>
+    <h1>${esc(v.name)}</h1>
+    <dl class="facts">
+      <div><dt>Phone</dt><dd>${esc(v.phone) || '—'}</dd></div>
+      <div><dt>Email</dt><dd>${esc(v.email) || '—'}</dd></div>
+      <div><dt>Service</dt><dd>${v.service_preference === 'spanish' ? 'Spanish' : 'English'}</dd></div>
+      <div><dt>Heard through</dt><dd>${esc(HOW_HEARD[v.how_heard] || v.how_heard) || '—'}</dd></div>
+      <div><dt>Visits</dt><dd>${rel.attendance.length}</dd></div>
+      <div><dt>SMS</dt><dd>${v.opted_out ? 'Opted out' : 'OK to text'}</dd></div>
+    </dl>
+    ${v.prayer_request ? `<div class="ops-block"><h3>Prayer request</h3><p>${esc(v.prayer_request)}</p></div>` : ''}
+    <div class="ops-block">
+      <h3>Grace's read</h3>
+      ${visInsight ? `<p>${esc(visInsight)}</p>` : '<p class="tiny">Ask Grace for a pastoral snapshot of this visitor.</p>'}
+      <button class="btn btn-ghost" id="visInsightBtn" style="margin-top:8px">${visInsight ? 'Refresh' : 'Get insight'}</button>
+    </div>
+    <div class="ops-block">
+      <h3>Texts</h3>
+      <div class="hello-log" style="max-height:220px;overflow:auto">
+        ${rel.messages.map((m) => `<div class="hello-row ${m.direction === 'inbound' ? 'me' : 'house'}"><span class="who">${m.direction === 'inbound' ? esc(v.name.split(' ')[0]) : 'Pastor'}</span>${esc(m.body)}</div>`).join('') || '<p class="tiny">No texts yet.</p>'}
+      </div>
+      <div class="hello-form" style="margin-top:8px">
+        <textarea id="visSmsBody" placeholder="Text ${esc(v.name.split(' ')[0])}..."></textarea>
+        <button class="btn btn-ghost" id="visSmsSuggest">Suggest</button>
+        <button class="btn btn-ink" id="visSmsSend">Send</button>
+      </div>
+    </div>
+    <div class="ops-block">
+      <h3>Email</h3>
+      ${emailsSorted.slice(0, 5).map((e) => `<p class="tiny">${esc((e.sent_at || '').slice(0, 10))} · ${esc(e.email_type)}${e.subject ? ' · ' + esc(e.subject) : ''} · ${e.opened_at ? 'opened' : 'sent'}</p>`).join('') || '<p class="tiny">Nothing sent yet.</p>'}
+      <div class="desk-form" style="margin-top:8px">
+        <input id="visEmailSubject" placeholder="Subject">
+        <button class="btn btn-ghost" id="visEmailSuggest">Suggest</button>
+      </div>
+      <div class="hello-form" style="margin-top:8px">
+        <textarea id="visEmailBody" placeholder="Write to ${esc(v.name.split(' ')[0])}..."></textarea>
+        <button class="btn btn-ink" id="visEmailSend">Send</button>
+      </div>
+    </div>
+    <div class="ops-block">
+      <h3>Notes</h3>
+      ${rel.notes.map((n) => `<p>${esc(n.body)}${n.tag ? ' <span class="mark-pray">' + esc(n.tag) + '</span>' : ''} <span class="tiny">${ago(n.created_at)}</span></p>`).join('') || '<p class="tiny">No notes.</p>'}
+      <div class="desk-form" style="margin-top:8px">
+        <input id="visNoteBody" placeholder="Add a note">
+        <select id="visNoteTag">${NOTE_TAGS.map((t) => `<option value="${t}">${t || 'no tag'}</option>`).join('')}</select>
+        <button class="btn btn-ink" id="visNoteAdd">Add</button>
+      </div>
+    </div>
+    <div class="ops-block">
+      <h3>Visits</h3>
+      ${rel.attendance.slice(0, 8).map((a) => `<p>${esc((a.visited_at || '').slice(0, 10))} · ${a.service_type === 'spanish' ? 'Spanish' : 'English'}</p>`).join('') || '<p class="tiny">No visits logged.</p>'}
+      <button class="btn btn-ghost" id="visCheckin" style="margin-top:8px">They're here today</button>
+    </div>
+    <div class="ops-block">
+      <h3>Remove</h3>
+      <button class="btn btn-ghost" id="visDelete">Delete this visitor</button>
+    </div>`;
+
+  $('visInsightBtn').onclick = async () => {
+    $('visInsightBtn').textContent = 'Thinking...';
+    try {
+      const r = await V.insight(v.id);
+      visInsight = r.insight;
+    } catch { visInsight = 'Grace could not build the snapshot. Try again.'; }
+    renderVisitorFile();
+  };
+
+  $('visSmsSuggest').onclick = async () => {
+    $('visSmsSuggest').textContent = '...';
+    try {
+      const recent = rel.messages.slice(-6).map((m) => ({ direction: m.direction, body: m.body }));
+      const r = await V.suggestReply(v.id, 'sms', recent);
+      $('visSmsBody').value = r.suggestion || '';
+    } catch { /* leave box */ }
+    $('visSmsSuggest').textContent = 'Suggest';
+  };
+
+  $('visSmsSend').onclick = async () => {
+    const text = $('visSmsBody').value.trim();
+    if (!text) return;
+    $('visSmsSend').textContent = 'Sending...';
+    try {
+      await V.sendSmsReply(v.id, text);
+      await V.loadAll();
+      renderVisitorFile();
+    } catch (e) { $('visSmsSend').textContent = 'Failed'; console.warn(e); }
+  };
+
+  $('visEmailSuggest').onclick = async () => {
+    $('visEmailSuggest').textContent = '...';
+    try {
+      const r = await V.suggestReply(v.id, 'email', []);
+      if (r.subject) $('visEmailSubject').value = r.subject;
+      $('visEmailBody').value = r.suggestion || '';
+    } catch { /* leave boxes */ }
+    $('visEmailSuggest').textContent = 'Suggest';
+  };
+
+  $('visEmailSend').onclick = async () => {
+    const subject = $('visEmailSubject').value.trim();
+    const bodyText = $('visEmailBody').value.trim();
+    if (!subject || !bodyText) return;
+    $('visEmailSend').textContent = 'Sending...';
+    try {
+      await V.sendVisitorEmail(v.id, subject, bodyText);
+      await V.loadAll();
+      renderVisitorFile();
+    } catch (e) { $('visEmailSend').textContent = 'Failed'; console.warn(e); }
+  };
+
+  $('visNoteAdd').onclick = async () => {
+    const bodyText = $('visNoteBody').value.trim();
+    if (!bodyText) return;
+    await V.addNote(v.id, bodyText, $('visNoteTag').value || null);
+    await V.loadAll();
+    renderVisitorFile();
+  };
+
+  $('visCheckin').onclick = async () => {
+    await V.logVisit(v.id, v.service_preference);
+    await V.loadAll();
+    visSelected = V.data().visitors.find((x) => x.id === v.id) || v;
+    renderVisitorList();
+    renderVisitorFile();
+  };
+
+  $('visDelete').onclick = async () => {
+    if ($('visDelete').textContent !== 'Tap again to confirm') { $('visDelete').textContent = 'Tap again to confirm'; return; }
+    await V.removeVisitor(v.id);
+    await V.loadAll();
+    visSelected = null;
+    renderVisitorList();
+    $('file').innerHTML = '<p class="ops-empty">Removed.</p>';
+  };
+}
+
 function renderFile() {
+  if (filter === 'visitors') return renderVisitorFile();
   if (filter === 'hello') return renderHelloFile();
   if (filter === 'family') return renderFamilyFile();
   if (filter === 'kids') return renderKidsFile();
@@ -524,7 +739,8 @@ $('autoReply').onchange = async () => {
 $('q').oninput = (e) => {
   query = e.target.value;
   renderList();
-  if (filter === 'hello') renderHelloFile();
+  if (filter === 'visitors') renderVisitorFile();
+  else if (filter === 'hello') renderHelloFile();
   else if (filter === 'family') renderFamilyFile();
   else if (filter === 'kids') renderKidsFile();
   else if (filter === 'auto') renderAutoFile();
@@ -536,7 +752,8 @@ document.querySelectorAll('.ops-filters button').forEach((b) => {
     filter = b.dataset.f;
     document.querySelectorAll('.ops-filters button').forEach((x) => x.classList.toggle('on', x === b));
     renderList();
-    if (filter === 'hello') renderHelloFile();
+    if (filter === 'visitors') renderVisitorFile();
+    else if (filter === 'hello') renderHelloFile();
     else if (filter === 'family') { if (!famSelected) famSelected = Ops.families()[0] || null; renderFamilyFile(); }
     else if (filter === 'kids') renderKidsFile();
     else if (filter === 'auto') renderAutoFile();
@@ -592,12 +809,14 @@ $('graceTalk').onclick = async () => {
 
 await Ops.bootstrap();
 await loadPeople();
+await V.loadAll();
 await loadHellos();
 renderList();
 renderFile();
-pushGrace('grace', 'I can look up families, kids classes, pickup codes, and who is in the house. Type a name, or tap Talk when voice is live.');
+pushGrace('grace', 'I can look up visitors, families, kids classes, pickup codes, and who is in the house, and I know my Bible. Type a question, or tap Talk.');
 
 setInterval(async () => {
   if (filter === 'hello') { await loadHellos(); renderHelloList(); if (helloSelected) renderHelloFile(); }
+  else if (!preview && filter === 'visitors') { await V.loadAll(); renderVisitorList(); }
   else if (!preview && (filter === 'all' || filter === 'here')) { await loadPeople(); renderList(); }
 }, 4000);

@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Serif:wght@600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../app/styles.css?v=9">
+<link rel="stylesheet" href="../app/styles.css?v=10">
 </head>
 <body class="ops">
 <header class="ops-top">
@@ -33,6 +33,7 @@
       <div class="ops-filters">
         <button class="on" data-f="all">All</button>
         <button data-f="here">Here</button>
+        <button data-f="visitors">Visitors</button>
         <button data-f="family">Families</button>
         <button data-f="kids">Kids</button>
         <button data-f="prayer">Prayer</button>
@@ -59,15 +60,16 @@
   </div>
   <div class="grace-log" id="graceLog"></div>
   <div class="grace-compose">
-    <input id="graceQ" placeholder="Ask about a family, a class, who is here…">
+    <input id="graceQ" placeholder="Ask about a visitor, a family, a class, who is here…">
     <button class="btn btn-ghost" id="graceAsk" type="button">Ask</button>
   </div>
 </aside>
 
-<script src="../app/gcc-config.js?v=9"></script>
-<script src="../app/gcc-data.js?v=9"></script>
-<script src="gcc-ops.js?v=9"></script>
-<script src="gcc-grace-voice.js?v=9"></script>
-<script type="module" src="staff-app.js?v=9"></script>
+<script src="../app/gcc-config.js?v=10"></script>
+<script src="../app/gcc-data.js?v=10"></script>
+<script src="gcc-ops.js?v=10"></script>
+<script src="gcc-visitors.js?v=10"></script>
+<script src="gcc-grace-voice.js?v=10"></script>
+<script type="module" src="staff-app.js?v=10"></script>
 </body>
 </html>

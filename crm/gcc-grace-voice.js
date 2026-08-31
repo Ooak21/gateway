@@ -20,6 +20,15 @@
     proc: null,
 
     async ask(query) {
+      // Full Grace brain first (visitors + families + Bible); keyword search
+      // through GCCOps stays as the offline/preview fallback.
+      const Vis = window.GCCVisitors;
+      if (Vis) {
+        try {
+          const r = await Vis.nlsearch(query);
+          if (r && r.explanation) return r.explanation;
+        } catch { /* fall through */ }
+      }
       const Ops = window.GCCOps;
       const data = await Ops.search(query);
       return (data && data.spoken) || 'I did not find that.';

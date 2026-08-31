@@ -1,0 +1,39 @@
+# Gateway repo — canonical deploy home for all gcc-* edge functions as of
+# 2026-08-31. The copies that used to live in luisocadiz-portfolio/supabase/
+# are superseded; deploy gcc-* from THIS repo only, so nothing drifts.
+#
+# Shared IBS Supabase project. verify_jwt=false is deliberate on every
+# function (root CLAUDE.md rule 4): JWTs are validated inside each function,
+# RLS enforces access.
+
+project_id = "jtifhcvbgxqwlywugvjv"
+
+[functions.gcc-geo-ping]
+verify_jwt = false
+
+[functions.gcc-service-blast]
+verify_jwt = false
+
+[functions.gcc-sms-inbound]
+verify_jwt = false
+
+[functions.gcc-youtube-feed]
+verify_jwt = false
+
+[functions.gcc-watch-hello]
+verify_jwt = false
+
+[functions.gcc-ops]
+verify_jwt = false
+
+[functions.gcc-grace-voice]
+verify_jwt = false
+
+[functions.gcc-grace]
+verify_jwt = false
+
+[functions.gcc-followup]
+verify_jwt = false
+
+[functions.gcc-email-events]
+verify_jwt = false
