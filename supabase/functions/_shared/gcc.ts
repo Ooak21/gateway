@@ -27,7 +27,7 @@ export async function requireStaff(req: Request) {
   const token = header.replace(/^Bearer\s+/i, '').trim();
   if (!token) return null;
   const { data } = await supabase.auth.getUser(token);
-  const role = data.user?.app_metadata?.role;
+  const role = data.user?.app_metadata?.gcc_role || data.user?.app_metadata?.role;
   if (!role || !['gcc_admin', 'gcc_staff'].includes(role)) return null;
   return { user: data.user, role };
 }

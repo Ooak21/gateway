@@ -16,7 +16,8 @@ export async function gccAuthGuard(opts = {}) {
   if (!gccSupabase) { location.href = 'login.html'; return null; }
   const { data: { session } } = await gccSupabase.auth.getSession();
   if (!session) { location.href = 'login.html'; return null; }
-  const role = session.user.app_metadata && session.user.app_metadata.role;
+  const meta = session.user.app_metadata || {};
+  const role = meta.gcc_role || meta.role;
   const allow = opts.allow || ['gcc_staff', 'gcc_admin'];
   if (!allow.includes(role)) {
     if (role === 'gcc_kids') {

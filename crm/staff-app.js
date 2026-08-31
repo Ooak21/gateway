@@ -6,7 +6,8 @@ const preview = new URLSearchParams(location.search).get('preview') === '1';
 const session = preview ? { preview: true } : await gccAuthGuard();
 if (!session) throw new Error('auth');
 
-if (!preview && session.user && session.user.app_metadata && session.user.app_metadata.role === 'gcc_kids') {
+const gccRole = !preview && session.user ? ((session.user.app_metadata || {}).gcc_role || (session.user.app_metadata || {}).role) : null;
+if (gccRole === 'gcc_kids') {
   location.href = 'kids.html';
 }
 
@@ -17,7 +18,7 @@ if (preview) {
 }
 
 Ops.usePreview(preview);
-if (session.access_token) Ops.setAuth(session.access_token, session.user.app_metadata && session.user.app_metadata.role);
+if (session.access_token) Ops.setAuth(session.access_token, gccRole);
 V.usePreview(preview);
 if (session.access_token) V.setAuth(session.access_token);
 

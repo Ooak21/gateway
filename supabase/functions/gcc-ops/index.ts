@@ -97,7 +97,7 @@ async function requireRole(req: Request, allowed: string[]) {
   const token = header.replace(/^Bearer\s+/i, '').trim();
   if (!token) return null;
   const { data } = await supabase.auth.getUser(token);
-  const role = data.user?.app_metadata?.role;
+  const role = data.user?.app_metadata?.gcc_role || data.user?.app_metadata?.role;
   if (!role || !allowed.includes(role)) return null;
   return { user: data.user, role };
 }
