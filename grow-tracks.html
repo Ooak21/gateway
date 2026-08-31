@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grow Tracks · GateWay City Church Las Vegas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --white:#FFFFFF;
+    --paper:#FAFAF8;
+    --stone:#F4F2EE;
+    --border:#E6E2DA;
+    --border-strong:#D4CFC4;
+    --ink:#1A1917;
+    --ink-soft:#3F3C38;
+    --muted:#6B6560;
+    --muted-light:#8A847C;
+    --gold:#A68B5B;
+    --gold-soft:#C4A974;
+    --navy:#1C2430;
+    --navy-deep:#121820;
+    --shadow-sm:0 1px 2px rgba(26,25,23,0.04);
+    --shadow-md:0 8px 30px rgba(26,25,23,0.06);
+    --shadow-lg:0 24px 60px rgba(26,25,23,0.10);
+    --radius:16px;
+    --radius-sm:12px;
+    --radius-pill:999px;
+    --font-display:'Cormorant Garamond', Georgia, serif;
+    --font-body:'Manrope', system-ui, sans-serif;
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--white);
+    font-family:var(--font-body);
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+    line-height:1.6;
+  }
+  a{color:inherit;}
+  button{font-family:inherit;}
+  img{max-width:100%;display:block;}
+
+  .wrap{max-width:900px;margin:0 auto;padding:0 6vw;}
+
+  header{
+    background:var(--white);
+    padding:20px 6vw;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    border-bottom:1px solid var(--border);
+    position:sticky;
+    top:0;
+    z-index:50;
+    backdrop-filter:blur(12px);
+    background:rgba(255,255,255,0.92);
+  }
+
+  .nav-logo{
+    display:flex;
+    align-items:center;
+    text-decoration:none;
+    flex-shrink:0;
+  }
+  .nav-logo img{
+    height:40px;
+    width:auto;
+    display:block;
+  }
+
+  .back-link{
+    color:var(--muted);
+    font-size:0.84rem;
+    font-weight:600;
+    text-decoration:none;
+    display:flex;
+    align-items:center;
+    gap:6px;
+    transition:color 0.2s;
+  }
+  .back-link:hover{color:var(--ink);}
+
+  .page-hero{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    min-height:560px;
+    background:var(--paper);
+    border-bottom:1px solid var(--border);
+  }
+
+  .page-hero-left{
+    color:var(--ink);
+    padding:72px 6vw;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+  }
+
+  .page-hero-photo{padding:40px 40px 40px 0;}
+
+  .photo-frame{
+    position:relative;
+    width:100%;
+    height:100%;
+    min-height:320px;
+    border-radius:var(--radius);
+    overflow:hidden;
+    background:var(--stone);
+  }
+  .photo-frame img{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+  }
+
+  .page-hero .kicker{
+    font-size:0.7rem;
+    letter-spacing:0.2em;
+    text-transform:uppercase;
+    color:var(--gold);
+    font-weight:700;
+    margin-bottom:16px;
+  }
+
+  .page-hero h1{
+    font-family:var(--font-display);
+    font-weight:500;
+    font-size:clamp(2.8rem,5vw,4rem);
+    line-height:1.02;
+    letter-spacing:-0.02em;
+    margin-bottom:18px;
+    color:var(--ink);
+  }
+
+  .page-hero-left > p{
+    font-size:1.02rem;
+    line-height:1.65;
+    color:var(--muted);
+    max-width:420px;
+    margin-bottom:6px;
+  }
+
+  .hero-jumplinks{
+    margin-top:36px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+  .hero-jumplinks a{
+    font-size:0.95rem;
+    font-weight:500;
+    color:var(--muted);
+    text-decoration:none;
+    padding-bottom:4px;
+    border-bottom:1px solid transparent;
+    width:fit-content;
+    transition:color 0.2s ease, border-color 0.2s ease;
+  }
+  .hero-jumplinks a:hover{color:var(--ink);border-color:var(--border-strong);}
+  .hero-jumplinks a.active{
+    color:var(--gold);
+    border-color:var(--gold);
+  }
+
+  @media (max-width:800px){
+    .page-hero{grid-template-columns:1fr;}
+    .page-hero-photo{padding:0 6vw 40px;order:-1;}
+    .page-hero-left{padding:40px 6vw 56px;}
+    .photo-frame{min-height:240px; position:relative; height:240px;}
+  }
+
+  .no-pressure{
+    font-family:var(--font-display);
+    font-style:italic;
+    font-size:1.2rem;
+    color:var(--gold);
+    font-weight:500;
+  }
+
+  main{padding:64px 0 100px;}
+
+  .progress-summary{
+    display:flex;
+    align-items:center;
+    gap:18px;
+    background:var(--white);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:20px 24px;
+    margin-bottom:48px;
+    box-shadow:var(--shadow-sm);
+  }
+
+  .progress-ring{
+    position:relative;
+    width:56px;
+    height:56px;
+    flex-shrink:0;
+  }
+  .progress-ring svg{transform:rotate(-90deg);}
+  .progress-ring circle{fill:none; stroke-width:5;}
+  .progress-ring .track-bg{stroke:var(--stone);}
+  .progress-ring .track-fill{
+    stroke:var(--gold);
+    stroke-linecap:round;
+    transition:stroke-dashoffset 0.5s ease;
+  }
+  .progress-ring-label{
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:var(--font-display);
+    font-weight:600;
+    font-size:0.9rem;
+    color:var(--ink);
+  }
+  .progress-text strong{color:var(--ink); font-weight:700; font-size:0.95rem;}
+  .progress-text p{font-size:0.86rem;color:var(--muted);margin-top:3px;}
+
+  .path{position:relative;}
+  .path::before{
+    content:"";
+    position:absolute;
+    left:29px;
+    top:20px;
+    bottom:20px;
+    width:1.5px;
+    background:var(--border);
+  }
+
+  .track{
+    position:relative;
+    display:grid;
+    grid-template-columns:60px 1fr;
+    gap:24px;
+    padding:0 0 36px;
+  }
+  .track:last-child{padding-bottom:0;}
+
+  .track-marker{
+    position:relative;
+    z-index:1;
+    width:60px;
+    height:60px;
+    border-radius:50%;
+    background:var(--white);
+    border:1.5px solid var(--border);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:var(--font-display);
+    font-weight:600;
+    font-size:1.25rem;
+    color:var(--gold);
+    transition:border-color 0.3s ease, background 0.3s ease, color 0.3s ease;
+  }
+  .track.done .track-marker{
+    background:var(--ink);
+    border-color:var(--ink);
+    color:var(--white);
+  }
+  .track-check{display:none;}
+  .track.done .track-check{display:block;}
+  .track.done .track-number{display:none;}
+
+  .track-card{
+    background:var(--white);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:26px 28px;
+    transition:border-color 0.2s, box-shadow 0.2s;
+  }
+  .track-card:hover{border-color:var(--border-strong); box-shadow:var(--shadow-sm);}
+
+  .track-tag{
+    display:inline-block;
+    font-size:0.68rem;
+    font-weight:700;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    color:var(--gold);
+    margin-bottom:8px;
+  }
+  .track h2{
+    font-family:var(--font-display);
+    font-weight:600;
+    font-size:1.45rem;
+    margin-bottom:10px;
+    color:var(--ink);
+    letter-spacing:-0.01em;
+  }
+  .track p{
+    font-size:0.95rem;
+    line-height:1.65;
+    color:var(--muted);
+    margin-bottom:18px;
+  }
+
+  .mark-done{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    background:none;
+    border:1.5px solid var(--border);
+    color:var(--muted);
+    font-family:var(--font-body);
+    font-weight:600;
+    font-size:0.82rem;
+    padding:10px 18px;
+    border-radius:var(--radius-pill);
+    cursor:pointer;
+    transition:all 0.2s ease;
+  }
+  .mark-done:hover{border-color:var(--ink);color:var(--ink);}
+  .track.done .mark-done{
+    background:var(--stone);
+    border-color:var(--border-strong);
+    color:var(--ink);
+  }
+
+  @media (max-width:600px){
+    .track{grid-template-columns:44px 1fr;gap:14px;}
+    .track-marker{width:44px;height:44px;font-size:1rem;}
+    .path::before{left:21px;}
+    .track-card{padding:20px;}
+  }
+
+  .expect{
+    margin-top:72px;
+    padding-top:56px;
+    border-top:1px solid var(--border);
+  }
+  .expect-header{text-align:center;max-width:480px;margin:0 auto 36px;}
+  .expect-header .kicker{
+    font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;
+    color:var(--gold);font-weight:700;margin-bottom:12px;
+  }
+  .expect-header h3{
+    font-family:var(--font-display);font-weight:500;font-size:2rem;color:var(--ink); letter-spacing:-0.02em;
+  }
+
+  .expect-grid{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:16px;
+  }
+  .expect-card{
+    text-align:center;
+    padding:28px 20px;
+    background:var(--paper);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+  }
+  .expect-icon{
+    width:52px;height:52px;
+    margin:0 auto 16px;
+    border-radius:50%;
+    background:var(--white);
+    border:1px solid var(--border);
+    display:flex;align-items:center;justify-content:center;
+    color:var(--gold);
+  }
+  .expect-icon svg{
+    width:22px;
+    height:22px;
+    display:block;
+    stroke:currentColor;
+    fill:none;
+    stroke-width:1.75;
+    stroke-linecap:round;
+    stroke-linejoin:round;
+  }
+  .expect-card h4{
+    font-family:var(--font-display);font-weight:600;font-size:1.15rem;
+    margin-bottom:6px;color:var(--ink);
+  }
+  .expect-card p{font-size:0.86rem;color:var(--muted);line-height:1.55;}
+
+  @media (max-width:600px){
+    .expect-grid{grid-template-columns:1fr;}
+  }
+
+  .intake{
+    background:var(--navy);
+    color:#fff;
+    border-radius:24px;
+    padding:56px 6vw;
+    margin-top:72px;
+    text-align:center;
+  }
+  .intake .kicker{
+    font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;
+    color:var(--gold-soft);font-weight:700;margin-bottom:14px;
+  }
+  .intake h3{
+    font-family:var(--font-display);font-weight:500;font-size:clamp(1.8rem,4vw,2.4rem);margin-bottom:14px; letter-spacing:-0.02em;
+  }
+  .intake > p{
+    color:rgba(255,255,255,0.7);max-width:520px;margin:0 auto 10px;font-size:1rem;line-height:1.65;
+  }
+  .intake .no-pressure{margin-bottom:36px; color:var(--gold-soft);}
+
+  .how-it-works{
+    display:flex;
+    justify-content:center;
+    gap:36px;
+    flex-wrap:wrap;
+    margin-bottom:40px;
+  }
+  .hiw-step{max-width:180px;}
+  .hiw-step .n{
+    font-family:var(--font-display);font-weight:600;font-size:1.6rem;color:var(--gold-soft);margin-bottom:6px;
+  }
+  .hiw-step .t{font-weight:700;font-size:0.9rem;margin-bottom:4px;}
+  .hiw-step .d{font-size:0.82rem;color:rgba(255,255,255,0.6);line-height:1.5;}
+
+  .intake-form{
+    max-width:480px;
+    margin:0 auto;
+    text-align:left;
+    background:rgba(255,255,255,0.05);
+    border:1px solid rgba(255,255,255,0.12);
+    border-radius:var(--radius);
+    padding:32px;
+  }
+
+  .field{margin-bottom:18px;}
+  .field label{
+    display:block;font-size:0.78rem;font-weight:700;color:var(--gold-soft);
+    margin-bottom:7px;letter-spacing:0.04em; text-transform:uppercase;
+  }
+  .field input, .field select, .field textarea{
+    width:100%;
+    background:rgba(255,255,255,0.06);
+    border:1px solid rgba(255,255,255,0.18);
+    border-radius:10px;
+    padding:13px 14px;
+    font-family:var(--font-body);
+    font-size:0.92rem;
+    color:#fff;
+    transition:border-color 0.2s;
+  }
+  .field input:focus, .field textarea:focus, .field select:focus{
+    outline:none;
+    border-color:var(--gold-soft);
+  }
+  .field input::placeholder, .field textarea::placeholder{color:rgba(255,255,255,0.35);}
+  .field select{color:#fff;}
+  .field select option{color:var(--ink);}
+  .field textarea{resize:vertical;min-height:70px;}
+  .field-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+
+  .radio-group{border:none;padding:0;margin:0 0 18px;}
+  .radio-group legend{
+    font-size:0.78rem;font-weight:700;color:var(--gold-soft);
+    margin-bottom:10px;letter-spacing:0.04em;line-height:1.4;padding:0; text-transform:uppercase;
+  }
+  .radio-option{
+    display:flex;
+    align-items:flex-start;
+    gap:10px;
+    font-size:0.88rem;
+    color:rgba(255,255,255,0.65);
+    padding:8px 0;
+    cursor:pointer;
+    line-height:1.4;
+  }
+  .radio-option input[type="radio"]{
+    appearance:none;
+    width:16px;height:16px;
+    min-width:16px;
+    margin-top:2px;
+    border-radius:50%;
+    border:1.5px solid rgba(255,255,255,0.35);
+    background:rgba(255,255,255,0.04);
+    cursor:pointer;
+    position:relative;
+  }
+  .radio-option input[type="radio"]:checked{border-color:var(--gold-soft);}
+  .radio-option input[type="radio"]:checked::after{
+    content:"";
+    position:absolute;
+    inset:3px;
+    border-radius:50%;
+    background:var(--gold-soft);
+  }
+  .radio-option:has(input:checked){color:#fff;}
+
+  @media (max-width:520px){
+    .field-row{grid-template-columns:1fr;}
+    .how-it-works{gap:22px;}
+    .intake-form{padding:24px;}
+  }
+
+  .submit-btn{
+    width:100%;
+    background:var(--white);
+    color:var(--ink);
+    border:none;
+    font-family:var(--font-body);
+    font-weight:700;
+    font-size:0.92rem;
+    padding:15px;
+    border-radius:var(--radius-pill);
+    cursor:pointer;
+    margin-top:6px;
+    transition:background 0.2s ease, transform 0.2s ease;
+  }
+  .submit-btn:hover{background:var(--stone);transform:translateY(-1px);}
+  .submit-btn:disabled{opacity:0.7; cursor:wait; transform:none;}
+
+  .form-note{
+    text-align:center;
+    font-size:0.78rem;
+    color:rgba(255,255,255,0.4);
+    margin-top:14px;
+  }
+
+  .success-msg{display:none; text-align:center; padding:20px;}
+  .success-msg.show{display:block;}
+  .intake-form.hidden{display:none;}
+  .success-msg h4{
+    font-family:var(--font-display);font-weight:500;font-size:1.5rem;color:var(--gold-soft);margin-bottom:8px;
+  }
+  .success-msg p{color:rgba(255,255,255,0.7);font-size:0.95rem;}
+
+  footer{
+    text-align:center;
+    padding:28px 6vw;
+    color:rgba(255,255,255,0.4);
+    font-size:0.8rem;
+    background:var(--navy-deep);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a href="index.html" class="nav-logo" aria-label="GateWay City Church Las Vegas">
+    <img src="https://images.squarespace-cdn.com/content/v1/5c898d8c65019f5841c0cb70/1552519144178-11JIKOEENJ7VCCWPG6YM/GateWayLogo.png?format=500w" alt="GateWay City Church">
+  </a>
+  <a href="index.html" class="back-link">&larr; Back to Home</a>
+</header>
+
+<section class="page-hero">
+  <div class="page-hero-left">
+    <div class="kicker">Your Next Step</div>
+    <h1>Grow Tracks</h1>
+    <p>Your Grow Track journey starts with connection — connecting to God, and connecting to His people, the church. Four tracks, one path forward.</p>
+    <div class="no-pressure" style="margin-top:14px;">Go at your own pace. There's no wrong place to start.</div>
+
+    <nav class="hero-jumplinks">
+      <a href="#track-1">Track 1 · Getting Connected</a>
+      <a href="#track-2">Track 2 · Freedom &amp; Wholeness</a>
+      <a href="#track-3">Track 3 · Discovering My SHAPE</a>
+      <a href="#track-4">Track 4 · The Holy Spirit</a>
+      <a href="#intakeSection">Sign Up</a>
+    </nav>
+  </div>
+  <div class="page-hero-photo">
+    <div class="photo-frame">
+      <img src="https://images.pexels.com/photos/20363852/pexels-photo-20363852.jpeg?auto=compress&cs=tinysrgb&w=1600" alt="Two people walking a sunlit path through the trees, a picture of the journey ahead">
+    </div>
+  </div>
+</section>
+
+<main class="wrap">
+
+  <div class="progress-summary">
+    <div class="progress-ring">
+      <svg width="56" height="56" viewBox="0 0 56 56">
+        <circle class="track-bg" cx="28" cy="28" r="24"></circle>
+        <circle id="progressCircle" class="track-fill" cx="28" cy="28" r="24" stroke-dasharray="150.8" stroke-dashoffset="150.8"></circle>
+      </svg>
+      <div class="progress-ring-label" id="progressLabel">0/4</div>
+    </div>
+    <div class="progress-text">
+      <strong>Your progress</strong>
+      <p id="progressCopy">Mark a track as done once you've completed it — we'll remember where you left off.</p>
+    </div>
+  </div>
+
+  <div class="path" id="trackPath">
+
+    <div class="track" data-track="1" id="track-1">
+      <div class="track-marker">
+        <span class="track-number">01</span>
+        <svg class="track-check" width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="track-card">
+        <div class="track-tag">Connection</div>
+        <h2>Getting Connected</h2>
+        <p>Grow Track 1 will show you how to build a relationship with God and how to get connected here at GateWay. This is where your journey begins — meeting the people and the community that will walk alongside you.</p>
+        <button type="button" class="mark-done">Mark as Complete</button>
+      </div>
+    </div>
+
+    <div class="track" data-track="2" id="track-2">
+      <div class="track-marker">
+        <span class="track-number">02</span>
+        <svg class="track-check" width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="track-card">
+        <div class="track-tag">Freedom</div>
+        <h2>Freedom and Wholeness</h2>
+        <p>Gaining freedom from your past is one of your first steps in moving into your future with God. In Grow Track 2 you will discover what true freedom and wholeness look like, and how Jesus Christ can set you free.</p>
+        <button type="button" class="mark-done">Mark as Complete</button>
+      </div>
+    </div>
+
+    <div class="track" data-track="3" id="track-3">
+      <div class="track-marker">
+        <span class="track-number">03</span>
+        <svg class="track-check" width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="track-card">
+        <div class="track-tag">Purpose</div>
+        <h2>Discovering Your SHAPE</h2>
+        <p>In Grow Track 3, you'll learn more about who God created you to be and His unique plan for your life by learning your SHAPE — your Spiritual gifts, Heart, Abilities, Personality, and Experiences.</p>
+        <button type="button" class="mark-done">Mark as Complete</button>
+      </div>
+    </div>
+
+    <div class="track" data-track="4" id="track-4">
+      <div class="track-marker">
+        <span class="track-number">04</span>
+        <svg class="track-check" width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="track-card">
+        <div class="track-tag">The Holy Spirit</div>
+        <h2>Baptism of the Holy Spirit</h2>
+        <p>We are connected to God continually because of the presence of the Holy Spirit. In Grow Track 4, you will take an in-depth look at who the Holy Spirit is and how to receive the Baptism of the Holy Spirit.</p>
+        <button type="button" class="mark-done">Mark as Complete</button>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="expect">
+    <div class="expect-header">
+      <div class="kicker">Before You Come</div>
+      <h3>What to expect</h3>
+    </div>
+    <div class="expect-grid">
+      <div class="expect-card">
+        <div class="expect-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><circle cx="9" cy="7" r="2.5"/><circle cx="17" cy="8" r="2"/><path d="M3.5 20v-.5A4.5 4.5 0 0 1 8 15h2a4.5 4.5 0 0 1 4.5 4.5V20"/><path d="M14 20v-.5A3.5 3.5 0 0 1 17.5 16h.5A3.5 3.5 0 0 1 21.5 19.5V20"/></svg>
+        </div>
+        <h4>Kids Welcome</h4>
+        <p>Gateway Kids is available during services so the whole family can take this step together.</p>
+      </div>
+      <div class="expect-card">
+        <div class="expect-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+        </div>
+        <h4>About an Hour</h4>
+        <p>Each track is a relaxed, conversational session — no homework, no pressure to keep pace.</p>
+      </div>
+      <div class="expect-card">
+        <div class="expect-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5.5 20a6.5 6.5 0 0 1 13 0"/></svg>
+        </div>
+        <h4>Just Yourself</h4>
+        <p>Come as you are. Bring your questions, your doubts, whatever you're carrying.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="intake" id="intakeSection">
+    <div class="kicker">Let's Talk</div>
+    <h3>No pressure. No pretending.</h3>
+    <p>Whether you're new to faith, returning after time away, or just curious — there's a place for you here. Fill this out and our team will personally reach out. No scripts, just a real conversation.</p>
+    <div class="no-pressure">"Bring your questions and your doubts."</div>
+
+    <div class="how-it-works">
+      <div class="hiw-step">
+        <div class="n">01</div>
+        <div class="t">Sign up</div>
+        <div class="d">Tell us a little about you below.</div>
+      </div>
+      <div class="hiw-step">
+        <div class="n">02</div>
+        <div class="t">We reach out</div>
+        <div class="d">A real person from our team will follow up personally.</div>
+      </div>
+      <div class="hiw-step">
+        <div class="n">03</div>
+        <div class="t">Show up</div>
+        <div class="d">Join us whenever you're ready. That's it.</div>
+      </div>
+    </div>
+
+    <form class="intake-form" id="intakeForm">
+      <div class="field-row">
+        <div class="field">
+          <label for="firstName">First Name</label>
+          <input type="text" id="firstName" name="firstName" placeholder="Jordan" required>
+        </div>
+        <div class="field">
+          <label for="lastName">Last Name</label>
+          <input type="text" id="lastName" name="lastName" placeholder="Rivera" required>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" placeholder="you@example.com" required>
+      </div>
+
+      <div class="field">
+        <label for="phone">Mobile Phone</label>
+        <input type="tel" id="phone" name="phone" placeholder="(702) 881-5623" required>
+      </div>
+
+      <div class="field">
+        <label for="zip">Zip Code</label>
+        <input type="text" id="zip" name="zip" placeholder="89130" required>
+      </div>
+
+      <fieldset class="field radio-group">
+        <legend>Which best describes you?</legend>
+        <label class="radio-option"><input type="radio" name="describesYou" value="new-to-christianity" required> New to Christianity</label>
+        <label class="radio-option"><input type="radio" name="describesYou" value="curious"> Curious about God, the Bible, Jesus, and Christianity</label>
+        <label class="radio-option"><input type="radio" name="describesYou" value="returning"> Returning to church and/or Christianity</label>
+        <label class="radio-option"><input type="radio" name="describesYou" value="other"> Other</label>
+      </fieldset>
+
+      <fieldset class="field radio-group">
+        <legend>Prior to coming to GateWay, how would you describe your past church experience?</legend>
+        <label class="radio-option"><input type="radio" name="pastExperience" value="not-much" required> I've not attended a church much prior to this one.</label>
+        <label class="radio-option"><input type="radio" name="pastExperience" value="enjoyed"> I used to attend another church and enjoyed the experience.</label>
+        <label class="radio-option"><input type="radio" name="pastExperience" value="not-helpful"> I used to attend another church, but did not find it helpful.</label>
+        <label class="radio-option"><input type="radio" name="pastExperience" value="other"> Other</label>
+      </fieldset>
+
+      <fieldset class="field radio-group">
+        <legend>What do you hope to get out of Grow Tracks?</legend>
+        <label class="radio-option"><input type="radio" name="hopeToGet" value="learn-bible" required> To learn more about the Bible, Jesus, and Christianity</label>
+        <label class="radio-option"><input type="radio" name="hopeToGet" value="tough-questions"> To ask some tough questions</label>
+        <label class="radio-option"><input type="radio" name="hopeToGet" value="meet-others"> To meet others / get involved</label>
+        <label class="radio-option"><input type="radio" name="hopeToGet" value="understand-impact"> To understand how Christianity can impact my life</label>
+        <label class="radio-option"><input type="radio" name="hopeToGet" value="other"> Other</label>
+      </fieldset>
+
+      <fieldset class="field radio-group">
+        <legend>How did you hear about Grow Tracks?</legend>
+        <label class="radio-option"><input type="radio" name="heardAbout" value="friend" required> Friend</label>
+        <label class="radio-option"><input type="radio" name="heardAbout" value="service-in-person"> Sunday service in person</label>
+        <label class="radio-option"><input type="radio" name="heardAbout" value="service-online"> Sunday service online</label>
+        <label class="radio-option"><input type="radio" name="heardAbout" value="social-media"> Social media</label>
+        <label class="radio-option"><input type="radio" name="heardAbout" value="email"> Email</label>
+        <label class="radio-option"><input type="radio" name="heardAbout" value="other"> Other</label>
+      </fieldset>
+
+      <div class="field">
+        <label for="notes">Additional info, comments, or questions</label>
+        <textarea id="notes" name="notes" placeholder="Optional"></textarea>
+      </div>
+
+      <fieldset class="field radio-group">
+        <legend>I am 18 years old or older.</legend>
+        <label class="radio-option"><input type="radio" name="ageConfirm" value="yes" required> Yes</label>
+        <label class="radio-option"><input type="radio" name="ageConfirm" value="no"> No</label>
+      </fieldset>
+
+      <button type="submit" class="submit-btn">Send My Info &rarr;</button>
+      <div class="form-note">We'll never share your info. A real person reads every submission.</div>
+    </form>
+
+    <div class="success-msg" id="successMsg">
+      <h4>You're on the list.</h4>
+      <p>Someone from our team will personally reach out soon. We're glad you're here.</p>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  &copy;2026 Gateway City Church. All Rights Reserved.<br>
+  3630 N. Rancho Drive #112, Las Vegas, Nevada 89130 · <a href="tel:+17028815623" style="color:inherit;">(702) 881-5623</a>
+</footer>
+
+<script>
+  document.querySelectorAll('.hero-jumplinks a').forEach(link => {
+    link.addEventListener('click', () => {
+      document.querySelectorAll('.hero-jumplinks a').forEach(l => l.classList.remove('active'));
+      link.classList.add('active');
+    });
+  });
+
+  const STORAGE_KEY = 'gatewayGrowTrackProgress';
+  const tracks = document.querySelectorAll('.track');
+  const progressCircle = document.getElementById('progressCircle');
+  const progressLabel = document.getElementById('progressLabel');
+  const progressCopy = document.getElementById('progressCopy');
+  const CIRCUMFERENCE = 150.8;
+
+  function loadProgress(){
+    try {
+      return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {};
+    } catch(e) {
+      return {};
+    }
+  }
+
+  function saveProgress(state){
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
+  }
+
+  function renderProgress(){
+    const state = loadProgress();
+    let doneCount = 0;
+
+    tracks.forEach(track => {
+      const id = track.dataset.track;
+      const isDone = !!state[id];
+      track.classList.toggle('done', isDone);
+      const btn = track.querySelector('.mark-done');
+      btn.textContent = isDone ? 'Completed' : 'Mark as Complete';
+      if (isDone) doneCount++;
+    });
+
+    progressLabel.textContent = doneCount + '/' + tracks.length;
+    const offset = CIRCUMFERENCE - (doneCount / tracks.length) * CIRCUMFERENCE;
+    progressCircle.style.strokeDashoffset = offset;
+
+    progressCopy.textContent = doneCount === tracks.length
+      ? "You've completed every Grow Track. That's huge — thank you for investing in this."
+      : "Mark a track as done once you've completed it — we'll remember where you left off.";
+  }
+
+  tracks.forEach(track => {
+    track.querySelector('.mark-done').addEventListener('click', () => {
+      const id = track.dataset.track;
+      const state = loadProgress();
+      state[id] = !state[id];
+      saveProgress(state);
+      renderProgress();
+    });
+  });
+
+  renderProgress();
+
+  async function submitToVisitorManagement(data){
+    console.log('Intake form submission (placeholder, not yet connected):', data);
+    return { ok: true };
+  }
+
+  const intakeForm = document.getElementById('intakeForm');
+  const successMsg = document.getElementById('successMsg');
+
+  intakeForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const submitBtn = intakeForm.querySelector('.submit-btn');
+    submitBtn.textContent = 'Sending...';
+    submitBtn.disabled = true;
+
+    function radioValue(name){
+      const checked = intakeForm.querySelector('input[name="' + name + '"]:checked');
+      return checked ? checked.value : '';
+    }
+
+    const data = {
+      firstName: document.getElementById('firstName').value,
+      lastName: document.getElementById('lastName').value,
+      email: document.getElementById('email').value,
+      phone: document.getElementById('phone').value,
+      zip: document.getElementById('zip').value,
+      describesYou: radioValue('describesYou'),
+      pastExperience: radioValue('pastExperience'),
+      hopeToGet: radioValue('hopeToGet'),
+      heardAbout: radioValue('heardAbout'),
+      notes: document.getElementById('notes').value,
+      ageConfirm: radioValue('ageConfirm'),
+      source: 'grow-tracks-page',
+      submittedAt: new Date().toISOString()
+    };
+
+    const result = await submitToVisitorManagement(data);
+
+    if (result.ok){
+      intakeForm.classList.add('hidden');
+      successMsg.classList.add('show');
+    } else {
+      submitBtn.textContent = 'Send My Info \u2192';
+      submitBtn.disabled = false;
+      alert('Something went wrong, please try again or contact us directly.');
+    }
+  });
+</script>
+
+<script src="gateway-prayer-chat.js"></script>
+
+</body>
+</html>

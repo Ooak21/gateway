@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Kids desk · GateWay</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Serif:wght@600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=8">
+</head>
+<body>
+<div class="house kids-desk">
+  <header class="house-top">
+    <a class="brand" href="staff.html">
+      <img src="../assets/gateway-logo.png" alt="" style="height:28px">
+      <div><b>Kids desk</b><span>Sunday class check-in</span></div>
+    </a>
+    <a class="tiny" id="deskBack" href="staff.html">Grace</a>
+  </header>
+  <main style="padding:0 20px 40px">
+    <p class="tiny" id="deskWho">Volunteer desk</p>
+    <div class="field"><label>Search a family or child</label><input id="kq" placeholder="Solis, Diego, Okonkwo"></div>
+    <div id="kResults"></div>
+    <div id="kDetail"></div>
+    <h3 class="sec-kicker" style="margin-top:28px">In class now</h3>
+    <div id="kRoster" class="roster-grid"></div>
+  </main>
+</div>
+<script src="gcc-config.js?v=8"></script>
+<script src="gcc-ops.js?v=8"></script>
+<script type="module">
+  import { gccAuthGuard } from './auth.js';
+  const Ops = window.GCCOps;
+  const preview = new URLSearchParams(location.search).get('preview') === '1';
+  const session = preview ? { preview: true } : await gccAuthGuard({ allow: ['gcc_staff', 'gcc_admin', 'gcc_kids'] });
+  if (!session) throw new Error('auth');
+  Ops.usePreview(preview);
+  if (session.access_token) Ops.setAuth(session.access_token, session.user.app_metadata && session.user.app_metadata.role);
+  if (preview) document.getElementById('deskBack').href = 'staff.html?preview=1';
+
+  const $ = (id) => document.getElementById(id);
+  const esc = (x) => String(x || '').replace(/[<>&"]/g, (c) => ({ '<':'&lt;','>':'&gt;','&':'&amp;','"':'&quot;' }[c]));
+  const full = (m) => ((m.first_name || '') + ' ' + (m.last_name || '')).trim();
+  let pick = null;
+
+  function kids() {
+    const out = [];
+    Ops.families().forEach((f) => {
+      (f.members || []).filter((m) => m.role === 'child').forEach((m) => {
+        out.push({ ...m, family: f, name: full(m), open: Ops.roster().find((r) => r.child_id === m.id) });
+      });
+    });
+    return out;
+  }
+
+  function renderRoster() {
+    const roster = Ops.roster();
+    $('kRoster').innerHTML = Ops.classes().map((c) => {
+      const inRoom = roster.filter((r) => r.class_id === c.id);
+      return `<div class="roster-card"><h3>${esc(c.name)} <span class="tiny">${inRoom.length}</span></h3>
+        ${inRoom.map((r) => `<p><b>${esc(r.child_name)}</b> · ${esc(r.pickup_code)}</p>`).join('') || '<p class="tiny">Empty</p>'}</div>`;
+    }).join('');
+  }
+
+  function renderResults() {
+    const q = $('kq').value.trim().toLowerCase();
+    const list = kids().filter((k) => !q || k.name.toLowerCase().includes(q) || (k.family.name || '').toLowerCase().includes(q));
+    $('kResults').innerHTML = list.slice(0, 12).map((k) => `
+      <button class="person" data-id="${esc(k.id)}" type="button">
+        <span class="initials">${esc((k.first_name || '?')[0])}</span>
+        <span><span class="nm">${esc(k.name)}</span>
+        <span class="meta">${esc(k.family.name)}${k.open ? ' · in ' + esc(k.open.class_name) : ''}</span></span>
+        <span class="when">${k.open ? k.open.pickup_code : (k.age != null ? k.age + 'y' : '')}</span>
+      </button>`).join('') || '<p class="tiny">No match. Staff can add this child on the Families tab.</p>';
+    $('kResults').querySelectorAll('[data-id]').forEach((btn) => {
+      btn.onclick = () => { pick = kids().find((k) => k.id === btn.dataset.id); renderDetail(); };
+    });
+  }
+
+  function renderDetail() {
+    const k = pick;
+    if (!k) { $('kDetail').innerHTML = ''; return; }
+    const suggested = Ops.suggestedClass(k);
+    if (k.open) {
+      $('kDetail').innerHTML = `
+        <article class="list-card" style="margin-top:12px">
+          <p class="tiny">${esc(k.family.name)}</p>
+          <h2>${esc(k.name)}</h2>
+          <p class="pickup-code">${esc(k.open.pickup_code)}</p>
+          <p class="tiny">In ${esc(k.open.class_name)} · ${esc(k.open.room || '')}. Parent was queued a text.</p>
+          <button class="btn btn-ghost btn-full" id="kOut" style="margin-top:12px">Mark picked up</button>
+        </article>`;
+      $('kOut').onclick = async () => {
+        await Ops.checkOut(k.open.id);
+        pick = kids().find((x) => x.id === k.id);
+        renderResults(); renderDetail(); renderRoster();
+      };
+      return;
+    }
+    $('kDetail').innerHTML = `
+      <article class="list-card" style="margin-top:12px">
+        <p class="tiny">${esc(k.family.name)}</p>
+        <h2>${esc(k.name)}</h2>
+        <p class="tiny">Age ${k.age ?? '—'} · suggested ${esc(suggested ? suggested.name : 'class')}</p>
+        <div class="field"><label>Class</label>
+          <select id="kClass">${Ops.classes().map((c) => `<option value="${c.id}" ${suggested && suggested.id === c.id ? 'selected' : ''}>${esc(c.name)} · ${esc(c.room)}</option>`).join('')}</select>
+        </div>
+        <button class="btn btn-ink btn-full" id="kIn">Check in and text parent</button>
+      </article>`;
+    $('kIn').onclick = async () => {
+      const data = await Ops.checkIn({ child_id: k.id, class_id: $('kClass').value, volunteer_name: 'Kids desk' });
+      pick = kids().find((x) => x.id === k.id);
+      renderResults(); renderDetail(); renderRoster();
+      if (data && data.notices && data.notices[0]) {
+        const n = data.notices[0];
+        const note = document.createElement('p');
+        note.className = 'tiny';
+        note.textContent = (n.status === 'preview' ? 'Notice queued (preview): ' : 'Notice: ') + n.body;
+        $('kDetail').appendChild(note);
+      }
+    };
+  }
+
+  await Ops.bootstrap();
+  $('deskWho').textContent = preview ? 'Preview desk · Elena would sign in as gcc_kids' : 'Kids volunteer';
+  $('kq').oninput = () => { renderResults(); };
+  renderResults();
+  renderRoster();
+</script>
+</body>
+</html>

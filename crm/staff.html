@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Grace · GateWay Las Vegas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Serif:wght@600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css?v=9">
+</head>
+<body class="ops">
+<header class="ops-top">
+  <div style="display:flex;align-items:center;gap:12px">
+    <img src="../assets/gateway-logo.png" alt="" style="height:32px">
+    <div class="who"><b>GateWay Las Vegas</b><br>People file</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+    <span class="tiny" id="headCount">Loading</span>
+    <label class="tiny" style="display:flex;align-items:center;gap:6px">
+      <input type="checkbox" id="autoReply" checked>
+      Watch auto-reply
+    </label>
+    <a class="btn btn-ghost" href="kids.html">Kids desk</a>
+    <a class="btn btn-ghost" href="sunday.html" target="_blank" rel="noopener">Sunday screen</a>
+    <button class="btn btn-ghost" id="btnOut">Sign out</button>
+  </div>
+</header>
+<div class="ops-body">
+  <aside class="ops-list">
+    <div class="ops-tools">
+      <input type="search" id="q" placeholder="Search name, family, class">
+      <div class="ops-filters">
+        <button class="on" data-f="all">All</button>
+        <button data-f="here">Here</button>
+        <button data-f="family">Families</button>
+        <button data-f="kids">Kids</button>
+        <button data-f="prayer">Prayer</button>
+        <button data-f="inbox">Inbox</button>
+        <button data-f="serve">Serve</button>
+        <button data-f="hello">Hellos</button>
+        <button data-f="auto">Auto</button>
+      </div>
+    </div>
+    <div class="ops-people" id="people"></div>
+  </aside>
+  <section class="ops-file" id="file">
+    <p class="ops-empty">Select someone on the left.</p>
+  </section>
+</div>
+
+<aside class="grace-dock" id="graceDock">
+  <div class="grace-head">
+    <div>
+      <b>Grace</b>
+      <span class="tiny" id="graceState">Typed</span>
+    </div>
+    <button class="btn btn-ink" id="graceTalk" type="button">Talk</button>
+  </div>
+  <div class="grace-log" id="graceLog"></div>
+  <div class="grace-compose">
+    <input id="graceQ" placeholder="Ask about a family, a class, who is here…">
+    <button class="btn btn-ghost" id="graceAsk" type="button">Ask</button>
+  </div>
+</aside>
+
+<script src="gcc-config.js?v=9"></script>
+<script src="gcc-data.js?v=9"></script>
+<script src="gcc-ops.js?v=9"></script>
+<script src="gcc-grace-voice.js?v=9"></script>
+<script type="module" src="staff-app.js?v=9"></script>
+</body>
+</html>

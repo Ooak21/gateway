@@ -1,0 +1,2272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GateWay City Church · Las Vegas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --white:#FFFFFF;
+    --paper:#FAFAF8;
+    --stone:#F4F2EE;
+    --border:#E6E2DA;
+    --border-strong:#D4CFC4;
+    --ink:#1A1917;
+    --ink-soft:#3F3C38;
+    --muted:#6B6560;
+    --muted-light:#8A847C;
+    --gold:#A68B5B;
+    --gold-soft:#C4A974;
+    --gold-wash:rgba(166,139,91,0.10);
+    --navy:#1C2430;
+    --navy-deep:#121820;
+    --shadow-sm:0 1px 2px rgba(26,25,23,0.04);
+    --shadow-md:0 8px 30px rgba(26,25,23,0.06);
+    --shadow-lg:0 24px 60px rgba(26,25,23,0.10);
+    --radius:16px;
+    --radius-sm:12px;
+    --radius-pill:999px;
+    --font-display:'Cormorant Garamond', Georgia, serif;
+    --font-body:'Manrope', system-ui, sans-serif;
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--white);
+    font-family:var(--font-body);
+    color:var(--ink);
+    font-weight:400;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+  }
+  img{max-width:100%;display:block;}
+  a{color:inherit;}
+  button{font-family:inherit;}
+
+  .wrap{
+    max-width:1180px;
+    margin:0 auto;
+    padding:0 6vw;
+  }
+
+  /* ============ NAV ============ */
+  #siteNav{
+    position:fixed;
+    top:0; left:0; right:0;
+    z-index:100;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:22px 6vw;
+    transition:background 0.35s ease, padding 0.35s ease, box-shadow 0.35s ease, transform 0.35s ease, border-color 0.35s ease;
+    border-bottom:1px solid transparent;
+  }
+
+  #siteNav.solid{
+    background:rgba(255,255,255,0.92);
+    padding:14px 6vw;
+    box-shadow:var(--shadow-sm);
+    backdrop-filter:blur(16px) saturate(1.2);
+    -webkit-backdrop-filter:blur(16px) saturate(1.2);
+    border-bottom-color:var(--border);
+  }
+
+  #siteNav.nav-hidden{transform:translateY(-100%);}
+
+  .nav-utility{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    margin-right:20px;
+  }
+
+  .icon-btn{
+    background:none;
+    border:none;
+    color:rgba(255,255,255,0.85);
+    width:36px;
+    height:36px;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    transition:background 0.2s ease, color 0.2s ease;
+  }
+  .icon-btn:hover{background:rgba(255,255,255,0.12); color:#fff;}
+  #siteNav.solid .icon-btn{color:var(--muted);}
+  #siteNav.solid .icon-btn:hover{background:var(--stone); color:var(--ink);}
+
+  .nav-search{
+    position:relative;
+    display:flex;
+    align-items:center;
+  }
+
+  .nav-search input{
+    background:rgba(255,255,255,0.12);
+    border:1px solid rgba(255,255,255,0.22);
+    border-radius:var(--radius-pill);
+    padding:8px 14px;
+    font-size:0.84rem;
+    font-family:var(--font-body);
+    color:#fff;
+    width:0;
+    opacity:0;
+    transition:width 0.3s ease, opacity 0.3s ease, padding 0.3s ease;
+  }
+  #siteNav.solid .nav-search input{
+    background:var(--stone);
+    border-color:var(--border);
+    color:var(--ink);
+  }
+  .nav-search.open input{
+    width:190px;
+    opacity:1;
+    padding:8px 14px;
+    margin-right:6px;
+  }
+  .nav-search input::placeholder{color:rgba(255,255,255,0.5);}
+  #siteNav.solid .nav-search input::placeholder{color:var(--muted-light);}
+
+  .search-results{
+    position:fixed;
+    top:64px;
+    right:6vw;
+    width:240px;
+    background:var(--white);
+    border:1px solid var(--border);
+    border-radius:var(--radius-sm);
+    overflow:hidden;
+    box-shadow:var(--shadow-lg);
+    display:none;
+  }
+  .search-results.show{display:block;}
+  .search-results a{
+    display:block;
+    padding:12px 16px;
+    font-size:0.88rem;
+    font-weight:500;
+    color:var(--ink);
+    text-decoration:none;
+    border-bottom:1px solid var(--stone);
+  }
+  .search-results a:last-child{border-bottom:none;}
+  .search-results a:hover{background:var(--stone);}
+
+  .nav-logo{
+    display:flex;
+    align-items:center;
+    text-decoration:none;
+    flex-shrink:0;
+  }
+  .nav-logo img{
+    height:44px;
+    width:auto;
+    display:block;
+    transition:filter 0.3s ease, opacity 0.3s ease;
+  }
+  /* Logo is dark navy — invert to white over the hero video */
+  #siteNav:not(.solid) .nav-logo img{
+    filter:brightness(0) invert(1);
+  }
+  #siteNav.solid .nav-logo img{
+    filter:none;
+  }
+
+  .nav-links{
+    display:flex;
+    align-items:center;
+    gap:28px;
+    list-style:none;
+  }
+  .nav-links > li{position:relative;}
+  .nav-links a{
+    text-decoration:none;
+    color:rgba(255,255,255,0.92);
+    font-size:0.82rem;
+    font-weight:600;
+    letter-spacing:0.04em;
+    display:flex;
+    align-items:center;
+    gap:5px;
+    cursor:pointer;
+    transition:color 0.2s ease;
+  }
+  #siteNav.solid .nav-links a{color:var(--ink-soft);}
+  .nav-links > li:hover > a{color:#fff;}
+  #siteNav.solid .nav-links > li:hover > a{color:var(--gold);}
+
+  .caret{
+    width:7px; height:7px;
+    border-right:1.5px solid currentColor;
+    border-bottom:1.5px solid currentColor;
+    transform:rotate(45deg);
+    margin-top:-3px;
+    transition:transform 0.2s ease;
+    opacity:0.7;
+  }
+  .nav-links > li:hover .caret{transform:rotate(225deg); margin-top:3px;}
+
+  .mega{
+    position:absolute;
+    top:calc(100% + 18px);
+    left:50%;
+    transform:translateX(-50%) translateY(8px);
+    background:var(--white);
+    color:var(--ink);
+    border-radius:var(--radius-sm);
+    padding:12px;
+    min-width:250px;
+    box-shadow:var(--shadow-lg);
+    border:1px solid var(--border);
+    opacity:0;
+    visibility:hidden;
+    transition:opacity 0.2s ease, transform 0.2s ease, visibility 0.2s;
+  }
+  .nav-links > li:hover .mega{
+    opacity:1;
+    visibility:visible;
+    transform:translateX(-50%) translateY(0);
+  }
+  .mega a{
+    display:block;
+    padding:10px 12px;
+    border-radius:8px;
+    font-size:0.88rem;
+    font-weight:500;
+    letter-spacing:0;
+    color:var(--ink-soft) !important;
+  }
+  .mega a:hover{background:var(--stone); color:var(--ink) !important;}
+  .mega .mega-label{
+    font-size:0.68rem;
+    text-transform:uppercase;
+    letter-spacing:0.14em;
+    color:var(--muted-light);
+    padding:10px 12px 4px;
+    font-weight:700;
+  }
+
+  .nav-cta{
+    background:var(--white) !important;
+    color:var(--ink) !important;
+    padding:11px 22px !important;
+    border-radius:var(--radius-pill);
+    font-size:0.8rem !important;
+    font-weight:700 !important;
+    letter-spacing:0.03em !important;
+    box-shadow:var(--shadow-sm);
+    transition:transform 0.2s ease, background 0.2s ease !important;
+  }
+  .nav-cta:hover{transform:translateY(-1px); background:var(--stone) !important;}
+  #siteNav.solid .nav-cta{
+    background:var(--ink) !important;
+    color:var(--white) !important;
+  }
+  #siteNav.solid .nav-cta:hover{background:var(--navy) !important;}
+
+  .nav-burger{display:none;}
+  .nav-right{display:flex; align-items:center; gap:28px;}
+
+  @media (max-width:960px){
+    .nav-right{display:none;}
+    .nav-burger{
+      display:flex;
+      flex-direction:column;
+      gap:5px;
+      background:none;
+      border:none;
+      cursor:pointer;
+      padding:4px;
+    }
+    .nav-burger span{width:22px;height:1.5px;background:#fff;display:block; transition:background 0.2s;}
+    #siteNav.solid .nav-burger span{background:var(--ink);}
+  }
+
+  @keyframes wipeCircle{
+    from{ clip-path:circle(0vmax at 50% 50%); }
+    to{ clip-path:circle(100vmax at 50% 50%); }
+  }
+  .type-circle{ animation:wipeCircle 750ms cubic-bezier(.55,0,.4,1) forwards; }
+
+  @keyframes quadGrow{
+    from{ transform:scale(0); }
+    to{ transform:scale(1); }
+  }
+  .quad{ position:absolute; width:50%; height:50%; overflow:hidden; }
+  .quad video{ position:absolute; object-fit:cover; }
+  .quad.tl{ top:0; left:0; transform-origin:top left; }
+  .quad.tr{ top:0; left:50%; transform-origin:top right; }
+  .quad.bl{ top:50%; left:0; transform-origin:bottom left; }
+  .quad.br{ top:50%; left:50%; transform-origin:bottom right; }
+  .quad.grow{ animation:quadGrow 520ms cubic-bezier(.65,0,.35,1) forwards; }
+
+  /* ============ HERO ============ */
+  .hero{
+    position:sticky;
+    top:0;
+    z-index:-1;
+    width:100%;
+    height:100vh;
+    min-height:640px;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+    justify-content:flex-end;
+  }
+
+  #mosaic{
+    position:absolute;
+    inset:0;
+    z-index:0;
+    overflow:hidden;
+    background:var(--navy-deep);
+  }
+  #mosaic video{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+  }
+
+  .hero::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    z-index:1;
+    background:
+      linear-gradient(to top, rgba(18,24,32,0.88) 0%, rgba(18,24,32,0.35) 45%, rgba(18,24,32,0.25) 100%);
+    pointer-events:none;
+  }
+
+  .hero-content{
+    position:relative;
+    z-index:3;
+    padding:0 6vw 6vw;
+    max-width:760px;
+  }
+  .hero-content-centered{
+    max-width:820px;
+    margin:0 auto;
+    text-align:center;
+    align-self:center;
+    padding-bottom:140px;
+  }
+  .hero-content-centered h1{margin-bottom:28px;}
+
+  /* ---- Intro: white logo splash → video plays through → copy fades in ---- */
+  #heroIntro{
+    position:absolute; inset:0; z-index:5;
+    background:var(--navy-deep);
+    display:flex; align-items:center; justify-content:center;
+    opacity:1; transition:opacity 1s ease;
+  }
+  #heroIntro.fade{opacity:0; pointer-events:none;}
+  #heroIntro img{width:min(420px, 64vw); filter:brightness(0) invert(1);}
+  #heroDark{
+    position:absolute; inset:0; z-index:2;
+    background:#000;
+    opacity:0; transition:opacity 1400ms ease;
+    pointer-events:none;
+  }
+  #heroDark.on{opacity:1;}
+  #heroDark.instant{transition:none;}
+  .hero-content-centered{transition:opacity 900ms ease;}
+  .hero.intro-running .hero-content-centered{opacity:0; pointer-events:none;}
+  .play-toggle{display:none !important;} /* rotation is gone, the toggle with it */
+
+  .new-pill{
+    display:inline-block;
+    background:rgba(255,255,255,0.10);
+    backdrop-filter:blur(10px);
+    color:#fff;
+    font-weight:600;
+    font-size:0.88rem;
+    letter-spacing:0.04em;
+    padding:14px 28px;
+    border-radius:var(--radius-pill);
+    text-decoration:none;
+    border:1px solid rgba(255,255,255,0.28);
+    opacity:0;
+    animation:riseIn 1s ease-out 0.8s forwards;
+    transition:background 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+  }
+  .new-pill:hover{background:rgba(255,255,255,0.18); transform:translateY(-2px); border-color:rgba(255,255,255,0.45);}
+  .new-pill strong{color:var(--gold-soft);}
+
+  .hero-cards{
+    position:relative;
+    z-index:5;
+    max-width:1180px;
+    margin:0 auto;
+    padding:0 6vw;
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:16px;
+    transform:translateY(-72px);
+    margin-bottom:-72px;
+  }
+  .hero-card{
+    background:var(--white);
+    color:var(--ink);
+    border-radius:var(--radius);
+    padding:28px 26px;
+    text-decoration:none;
+    border:1px solid var(--border);
+    box-shadow:var(--shadow-md);
+    transition:transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  }
+  .hero-card:hover{
+    transform:translateY(-3px);
+    box-shadow:var(--shadow-lg);
+    border-color:var(--border-strong);
+  }
+  .hero-card h4{
+    font-family:var(--font-display);
+    font-weight:600;
+    font-size:1.35rem;
+    letter-spacing:-0.01em;
+    margin-bottom:8px;
+    color:var(--ink);
+  }
+  .hero-card p{
+    font-size:0.9rem;
+    line-height:1.55;
+    color:var(--muted);
+    font-weight:500;
+  }
+
+  @media (max-width:860px){
+    .hero-cards{grid-template-columns:1fr; transform:translateY(-36px); margin-bottom:-36px;}
+    .hero-content-centered{padding-bottom:80px;}
+  }
+
+  .eyebrow{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    font-size:0.72rem;
+    letter-spacing:0.22em;
+    text-transform:uppercase;
+    color:rgba(255,255,255,0.75);
+    font-weight:600;
+    margin-bottom:20px;
+    opacity:0;
+    animation:riseIn 0.9s ease-out 0.3s forwards;
+  }
+
+  h1{
+    font-family:var(--font-display);
+    font-weight:500;
+    font-size:clamp(3.2rem, 8vw, 6rem);
+    line-height:0.95;
+    letter-spacing:-0.02em;
+    color:#fff;
+    margin-bottom:22px;
+    opacity:0;
+    animation:riseIn 1s ease-out 0.5s forwards;
+  }
+  h1 em{font-style:italic; color:var(--gold-soft);}
+
+  .subhead{
+    font-size:clamp(1rem, 1.5vw, 1.15rem);
+    line-height:1.6;
+    color:rgba(255,255,255,0.8);
+    max-width:480px;
+    margin-bottom:36px;
+    font-weight:400;
+    opacity:0;
+    animation:riseIn 1s ease-out 0.7s forwards;
+  }
+
+  .arch-divider{
+    width:100%; max-width:420px; height:28px; margin-bottom:32px;
+    opacity:0; animation:riseIn 1s ease-out 0.85s forwards;
+  }
+
+  .service-row{
+    display:flex; flex-wrap:wrap; gap:14px; margin-bottom:36px;
+    opacity:0; animation:riseIn 1s ease-out 0.95s forwards;
+  }
+  .service-chip{
+    display:flex; align-items:baseline; gap:8px;
+    padding:10px 18px; border:1px solid rgba(255,255,255,0.25);
+    border-radius:var(--radius-pill); font-size:0.85rem; color:#fff;
+    background:rgba(255,255,255,0.08); backdrop-filter:blur(6px);
+  }
+  .service-chip strong{
+    font-family:var(--font-display); font-weight:600;
+    color:var(--gold-soft); font-size:1rem;
+  }
+
+  .cta-row{
+    display:flex; flex-wrap:wrap; gap:12px;
+    opacity:0; animation:riseIn 1s ease-out 1.1s forwards;
+  }
+
+  .btn{
+    font-family:var(--font-body);
+    font-weight:700;
+    font-size:0.88rem;
+    letter-spacing:0.02em;
+    padding:15px 28px;
+    border-radius:var(--radius-pill);
+    text-decoration:none;
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+    transition:transform 0.25s ease, background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, color 0.25s ease;
+    cursor:pointer;
+    border:none;
+  }
+  .btn-primary{
+    background:var(--ink);
+    color:var(--white);
+    box-shadow:var(--shadow-sm);
+  }
+  .btn-primary:hover{background:var(--navy); transform:translateY(-2px); box-shadow:var(--shadow-md);}
+  .btn-secondary{
+    background:transparent;
+    color:var(--ink);
+    border:1.5px solid var(--border-strong);
+  }
+  .btn-secondary:hover{border-color:var(--ink); transform:translateY(-2px);}
+  .new-here .btn-secondary{
+    color:#fff;
+    border-color:rgba(255,255,255,0.35);
+  }
+  .new-here .btn-secondary:hover{
+    border-color:#fff;
+    background:rgba(255,255,255,0.08);
+  }
+  .new-here .btn-primary{
+    background:var(--white);
+    color:var(--ink);
+  }
+  .new-here .btn-primary:hover{
+    background:var(--stone);
+  }
+
+  .play-toggle{
+    position:absolute;
+    top:50%; left:50%;
+    transform:translate(-50%,-50%);
+    z-index:4;
+    width:64px; height:64px;
+    border-radius:50%;
+    background:rgba(255,255,255,0.12);
+    backdrop-filter:blur(10px);
+    border:1px solid rgba(255,255,255,0.35);
+    display:flex; align-items:center; justify-content:center;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity 0.35s ease;
+  }
+  .play-toggle.visible{opacity:1;}
+  .play-toggle .icon-play{
+    width:0; height:0;
+    border-top:10px solid transparent;
+    border-bottom:10px solid transparent;
+    border-left:16px solid #fff;
+    margin-left:3px;
+  }
+  .play-toggle .icon-pause{display:none; gap:5px;}
+  .play-toggle .icon-pause span{
+    width:4px; height:20px;
+    background:#fff;
+    border-radius:1px;
+  }
+  .play-toggle.is-playing .icon-play{display:none;}
+  .play-toggle.is-playing .icon-pause{display:flex;}
+
+  @keyframes riseIn{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+
+  /* ============ PAGE BODY ============ */
+  .page-body{
+    position:relative;
+    background:var(--white);
+    border-radius:28px 28px 0 0;
+    box-shadow:0 -12px 40px rgba(18,24,32,0.12);
+  }
+
+  section{padding:100px 0;}
+
+  /* Breathing room between "I'm New Here" and Campus Pastors */
+  section:has(.new-here){
+    padding-bottom: 72px;
+  }
+  #pastors{
+    padding-top: 120px;
+    padding-bottom: 120px;
+  }
+
+  .eyebrow-dark{
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+    font-size:0.7rem;
+    letter-spacing:0.2em;
+    text-transform:uppercase;
+    color:var(--gold);
+    font-weight:700;
+    margin-bottom:16px;
+  }
+
+  h2{
+    font-family:var(--font-display);
+    font-weight:500;
+    font-size:clamp(2.4rem, 4.2vw, 3.4rem);
+    line-height:1.08;
+    letter-spacing:-0.02em;
+    color:var(--ink);
+    margin-bottom:18px;
+  }
+  h2 em{font-style:italic; color:var(--gold); font-weight:500;}
+
+  .lede{
+    font-size:1.05rem;
+    line-height:1.7;
+    color:var(--muted);
+    max-width:560px;
+    font-weight:400;
+  }
+
+  /* ---- Welcome ---- */
+  #welcome{
+    padding-top:72px;
+    padding-bottom:88px;
+  }
+  .welcome{
+    display:grid;
+    grid-template-columns:1.15fr 0.85fr;
+    gap:56px 64px;
+    align-items:center;
+  }
+  .welcome-copy{
+    max-width:520px;
+    padding:12px 0 24px;
+  }
+  .welcome-media{
+    display:flex;
+    justify-content:flex-end;
+    align-items:center;
+    padding:28px 0 36px;
+  }
+  .welcome-photo{
+    position:relative;
+    border-radius:var(--radius);
+    overflow:hidden;
+    width:100%;
+    max-width:380px;
+    aspect-ratio:4/5;
+    max-height:420px;
+    background:var(--stone);
+    box-shadow:var(--shadow-md);
+  }
+  .welcome-photo video{width:100%;height:100%;object-fit:cover;}
+  .welcome-photo::after{
+    content:"";
+    position:absolute; inset:0;
+    background:linear-gradient(to top, rgba(18,24,32,0.2), transparent 45%);
+    pointer-events:none;
+  }
+  @media (max-width:860px){
+    .welcome{grid-template-columns:1fr; gap:28px;}
+    .welcome-copy{max-width:none; padding:0;}
+    .welcome-media{
+      justify-content:center;
+      padding:8px 0 16px;
+    }
+    .welcome-photo{
+      max-width:320px;
+      max-height:360px;
+    }
+  }
+
+  /* ---- I'm New Here ---- */
+  .new-here{
+    background:var(--navy);
+    color:#fff;
+    border-radius:24px;
+    padding:72px 6vw;
+    display:grid;
+    grid-template-columns:1.1fr 0.9fr;
+    gap:48px;
+    align-items:center;
+    position:relative;
+    overflow:hidden;
+  }
+  .new-here::before{
+    content:"";
+    position:absolute; top:-40%; right:-15%;
+    width:480px; height:480px;
+    background:radial-gradient(circle, rgba(166,139,91,0.18), transparent 70%);
+    pointer-events:none;
+  }
+  .new-here h2{color:#fff;}
+  .new-here .lede{color:rgba(255,255,255,0.72);}
+  .new-here .eyebrow-dark{color:var(--gold-soft);}
+
+  .steps{display:flex;flex-direction:column;gap:12px; position:relative; z-index:1;}
+  .step{
+    display:flex; gap:16px; align-items:flex-start;
+    background:rgba(255,255,255,0.05);
+    border:1px solid rgba(255,255,255,0.10);
+    border-radius:var(--radius-sm);
+    padding:18px 20px;
+  }
+  .step-num{
+    font-family:var(--font-display);
+    font-weight:600;
+    font-size:1.35rem;
+    color:var(--gold-soft);
+    flex-shrink:0;
+    line-height:1;
+    padding-top:2px;
+  }
+  .step p{font-size:0.9rem;color:rgba(255,255,255,0.68);line-height:1.5;}
+  .step strong{color:#fff;display:block;margin-bottom:4px;font-size:0.95rem;font-weight:600;}
+
+  @media (max-width:860px){
+    .new-here{grid-template-columns:1fr; padding:48px 6vw;}
+  }
+
+  /* ---- Pastors ---- */
+  .pastors{
+    display:grid;
+    grid-template-columns:0.85fr 1.15fr;
+    gap:56px;
+    align-items:center;
+  }
+  .pastors + .pastors{
+    margin-top:72px;
+    padding-top:72px;
+    border-top:1px solid var(--border);
+  }
+  .pastors.pastors-alt{
+    grid-template-columns:1.15fr 0.85fr;
+  }
+  .pastor-photo{
+    border-radius:var(--radius);
+    overflow:hidden;
+    aspect-ratio:1/1;
+    background:var(--stone);
+  }
+  .pastor-photo img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    object-position:center center;
+  }
+  /* Portrait shots (taller than wide) — keep the face in frame, less crop */
+  .pastor-photo:has(img.face-focus){
+    aspect-ratio:4/5;
+  }
+  .pastor-photo img.face-focus{
+    object-position:center top;
+  }
+  .pastor-photo.photo-placeholder{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:linear-gradient(145deg, var(--stone) 0%, #EDE9E1 100%);
+    border:1px solid var(--border);
+  }
+  .pastor-photo.photo-placeholder span{
+    font-family:var(--font-display);
+    font-size:1.1rem;
+    font-weight:500;
+    color:var(--muted-light);
+    letter-spacing:0.04em;
+  }
+  @media (max-width:860px){
+    .pastors,
+    .pastors.pastors-alt{grid-template-columns:1fr;}
+    .pastors.pastors-alt .pastor-photo{order:-1;}
+    .pastors + .pastors{margin-top:48px; padding-top:48px;}
+  }
+
+  .pastor-quote{
+    margin-top:20px;
+    font-family:var(--font-display);
+    font-style:italic;
+    font-size:1.4rem;
+    line-height:1.4;
+    color:var(--ink);
+    font-weight:500;
+  }
+
+  .team-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(160px, 200px));
+    gap:24px;
+    margin-top:56px;
+  }
+  .team-card{text-align:left;}
+  .team-card img{
+    width:100%;
+    aspect-ratio:1/1;
+    object-fit:cover;
+    border-radius:var(--radius-sm);
+    margin-bottom:14px;
+    background:var(--stone);
+  }
+  .team-card h4{
+    font-family:var(--font-display);
+    font-weight:600;
+    font-size:1.15rem;
+    color:var(--ink);
+    margin-bottom:4px;
+  }
+  .placeholder-tag{
+    font-size:0.8rem;
+    color:var(--muted-light);
+    font-style:italic;
+  }
+
+  .parent-note{
+    margin-top:40px;
+    padding-top:32px;
+    border-top:1px solid var(--border);
+  }
+  .parent-note p{
+    font-size:0.88rem;
+    line-height:1.75;
+    color:var(--muted);
+    max-width:720px;
+  }
+  .parent-note strong{color:var(--ink); font-weight:600;}
+
+  /* ---- Ministries ---- */
+  .ministries-header{text-align:center;max-width:560px;margin:0 auto 52px;}
+  .ministries-header .eyebrow-dark{justify-content:center;}
+  .ministries-header .lede{margin:0 auto;}
+
+  .ministry-grid{
+    display:grid;
+    grid-template-columns:repeat(3, 1fr);
+    gap:20px;
+  }
+  .ministry-card{
+    background:var(--navy);
+    border-radius:var(--radius);
+    overflow:hidden;
+    position:relative;
+    aspect-ratio:3/4;
+    display:flex;
+    align-items:flex-end;
+    color:#fff;
+  }
+  .ministry-card img, .ministry-card video{
+    position:absolute; inset:0; width:100%; height:100%; object-fit:cover;
+  }
+  .ministry-card::after{
+    content:"";
+    position:absolute; inset:0;
+    background:linear-gradient(to top, rgba(18,24,32,0.92) 8%, rgba(18,24,32,0.2) 55%, transparent 75%);
+    pointer-events:none;
+  }
+  .ministry-card-content{position:relative;z-index:2;padding:26px;}
+  .ministry-tag{
+    display:inline-block;
+    font-size:0.68rem;
+    font-weight:700;
+    letter-spacing:0.1em;
+    text-transform:uppercase;
+    color:var(--ink);
+    background:var(--white);
+    padding:6px 12px;
+    border-radius:var(--radius-pill);
+    margin-bottom:14px;
+  }
+  .ministry-card h3{
+    font-family:var(--font-display);
+    font-weight:600;
+    font-size:1.5rem;
+    margin-bottom:8px;
+    letter-spacing:-0.01em;
+  }
+  .ministry-card p{font-size:0.88rem;color:rgba(255,255,255,0.72);line-height:1.55;}
+  @media (max-width:860px){
+    .ministry-grid{grid-template-columns:1fr;}
+    .ministry-card{aspect-ratio:16/11;}
+  }
+
+  /* ---- Serve ---- */
+  .serve-block{
+    background:var(--paper);
+    color:var(--ink);
+    border-radius:24px;
+    padding:64px 6vw;
+    border:1px solid var(--border);
+  }
+  .serve-block h2{color:var(--ink);max-width:520px;}
+  .serve-block .lede{color:var(--muted);max-width:560px;}
+  .serve-block .btn-primary{
+    background:var(--ink);
+    color:var(--white);
+  }
+  .serve-block .btn-primary:hover{background:var(--navy);}
+
+  .serve-grid{
+    display:grid;
+    grid-template-columns:repeat(4, 1fr);
+    gap:14px;
+    margin-top:36px;
+    max-height:0;
+    overflow:hidden;
+    opacity:0;
+    transition:max-height 0.5s ease, opacity 0.4s ease, margin-top 0.5s ease;
+  }
+  .serve-grid.open{
+    max-height:600px;
+    opacity:1;
+  }
+  .serve-card{
+    background:var(--white);
+    border:1px solid var(--border);
+    border-radius:var(--radius-sm);
+    padding:22px;
+    transition:border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .serve-card:hover{border-color:var(--border-strong); box-shadow:var(--shadow-sm);}
+  .serve-card h4{
+    font-family:var(--font-display);
+    font-weight:600;
+    font-size:1.2rem;
+    margin-bottom:10px;
+    color:var(--ink);
+  }
+  .serve-card p{font-size:0.86rem;line-height:1.55;color:var(--muted);}
+  @media (max-width:860px){
+    .serve-grid{grid-template-columns:1fr 1fr;}
+  }
+  @media (max-width:560px){
+    .serve-grid{grid-template-columns:1fr;}
+    .serve-grid.open{max-height:1200px;}
+  }
+
+  /* ---- Events (full-bleed editorial band) ---- */
+  #events.events-band{
+    padding: 0;
+    max-width: none;
+    margin: 0;
+    background:
+      radial-gradient(ellipse 70% 50% at 100% 0%, rgba(166,139,91,0.07), transparent 55%),
+      radial-gradient(ellipse 50% 40% at 0% 100%, rgba(28,36,48,0.04), transparent 50%),
+      var(--paper);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+  .events-inner{
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 110px 6vw 120px;
+  }
+  .events-top{
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 40px 64px;
+    align-items: end;
+    margin-bottom: 48px;
+    padding-bottom: 40px;
+    border-bottom: 1px solid var(--border);
+  }
+  .events-top .eyebrow-dark{margin-bottom: 14px;}
+  .events-top h2{
+    margin-bottom: 14px;
+    max-width: 14ch;
+  }
+  .events-top .lede{
+    margin: 0;
+    max-width: 420px;
+  }
+  .event-filters{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: flex-end;
+    align-content: flex-end;
+  }
+  .filter-chip{
+    background: var(--white);
+    border: 1.5px solid var(--border);
+    color: var(--muted);
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 0.8rem;
+    padding: 10px 18px;
+    border-radius: var(--radius-pill);
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .filter-chip:hover{border-color: var(--ink); color: var(--ink);}
+  .filter-chip.active{
+    background: var(--ink);
+    border-color: var(--ink);
+    color: var(--white);
+  }
+
+  .event-grid{
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+  }
+  .event-card{
+    display: grid;
+    grid-template-columns: 110px 1fr auto;
+    gap: 28px;
+    align-items: center;
+    padding: 28px 32px;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--border);
+    border-radius: 0;
+    transition: background 0.25s ease;
+  }
+  .event-card:last-child{border-bottom: none;}
+  .event-card:hover{
+    background: var(--stone);
+    transform: none;
+    box-shadow: none;
+  }
+  .event-card.hidden-filter{display: none;}
+
+  .event-date{
+    flex-shrink: 0;
+    width: auto;
+    height: auto;
+    min-height: 0;
+    border-radius: 0;
+    background: transparent;
+    border: none;
+    color: var(--ink);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 2px;
+    padding-right: 20px;
+    border-right: 1px solid var(--border);
+  }
+  .event-day{
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    color: var(--gold);
+    text-transform: uppercase;
+  }
+  .event-num{
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-size: 1.65rem;
+    line-height: 1;
+    margin-top: 2px;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+  }
+
+  .event-tag{
+    display: inline-block;
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 6px;
+  }
+  .event-body h3{
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: 1.45rem;
+    color: var(--ink);
+    margin-bottom: 6px;
+    letter-spacing: -0.015em;
+  }
+  .event-body p{
+    font-size: 0.92rem;
+    line-height: 1.55;
+    color: var(--muted);
+    max-width: 52ch;
+  }
+  .event-body .placeholder-tag{
+    display: block;
+    margin-bottom: 4px;
+  }
+  .event-arrow{
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted-light);
+    font-size: 1.1rem;
+    transition: border-color 0.2s, color 0.2s, background 0.2s, transform 0.2s;
+    flex-shrink: 0;
+  }
+  .event-card:hover .event-arrow{
+    border-color: var(--ink);
+    color: var(--ink);
+    background: var(--white);
+    transform: translateX(3px);
+  }
+
+  .event-empty{
+    display: none;
+    text-align: center;
+    padding: 48px 24px;
+    color: var(--muted-light);
+    font-style: italic;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+  }
+  .event-empty.show{display: block;}
+
+  @media (max-width: 860px){
+    .events-inner{padding: 80px 6vw 88px;}
+    .events-top{
+      grid-template-columns: 1fr;
+      gap: 28px;
+      align-items: start;
+    }
+    .event-filters{justify-content: flex-start;}
+    .event-card{
+      grid-template-columns: 88px 1fr;
+      gap: 18px;
+      padding: 22px 20px;
+    }
+    .event-arrow{display: none;}
+    .event-num{font-size: 1.35rem;}
+  }
+
+  /* ---- Watch ---- */
+  .watch{
+    background:var(--paper);
+    color:var(--ink);
+    border-top:1px solid var(--border);
+    border-bottom:1px solid var(--border);
+  }
+  .watch-header{
+    display:flex; justify-content:space-between; align-items:flex-end;
+    flex-wrap:wrap; gap:20px; margin-bottom:40px;
+  }
+  .watch-header h2{color:var(--ink);}
+  .watch-header .lede{color:var(--muted);}
+
+  .watch-grid{
+    display:grid;
+    grid-template-columns:1.4fr 1fr;
+    gap:20px;
+  }
+  .watch-feature{
+    position:relative;
+    border-radius:var(--radius);
+    overflow:hidden;
+    aspect-ratio:16/10;
+    text-decoration:none;
+    color:#fff;
+  }
+  .watch-feature video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;}
+  .watch-feature::after{
+    content:""; position:absolute; inset:0;
+    background:linear-gradient(to top, rgba(18,24,32,0.85), transparent 55%);
+    pointer-events:none;
+  }
+  .watch-feature-content{
+    position:absolute; left:0; right:0; bottom:0; z-index:2; padding:28px;
+  }
+  .watch-feature-title{
+    font-family:var(--font-display);
+    font-weight:600;
+    font-size:1.7rem;
+    letter-spacing:-0.01em;
+  }
+  .watch-feature-meta{
+    font-size:0.9rem;
+    color:rgba(255,255,255,0.72);
+    margin-top:4px;
+  }
+  .play-btn{
+    width:52px; height:52px; border-radius:50%;
+    background:rgba(255,255,255,0.15); backdrop-filter:blur(8px);
+    border:1px solid rgba(255,255,255,0.4);
+    display:flex; align-items:center; justify-content:center;
+    margin-bottom:16px; cursor:pointer;
+  }
+  .play-btn::after{
+    content:""; width:0;height:0;
+    border-top:7px solid transparent; border-bottom:7px solid transparent;
+    border-left:12px solid #fff; margin-left:3px;
+  }
+
+  .watch-side{display:flex;flex-direction:column;gap:12px;}
+  .watch-link-card{
+    background:var(--white);
+    border:1px solid var(--border);
+    border-radius:var(--radius-sm);
+    padding:22px 24px;
+    text-decoration:none;
+    color:var(--ink);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    transition:border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    flex:1;
+  }
+  .watch-link-card:hover{
+    border-color:var(--border-strong);
+    box-shadow:var(--shadow-sm);
+    transform:translateX(2px);
+  }
+  .watch-link-card h4{
+    font-family:var(--font-display);
+    font-weight:600;
+    font-size:1.25rem;
+    margin-bottom:4px;
+  }
+  .watch-link-card p{font-size:0.86rem;color:var(--muted);}
+  .watch-link-arrow{font-size:1.2rem;color:var(--gold); font-weight:400;}
+
+  .watch-feature iframe{position:absolute;inset:0;width:100%;height:100%;border:0;}
+  .watch-feature.is-playing::after{content:none;}
+  .watch-feature.is-playing .watch-feature-content{display:none;}
+  .live-pill{
+    position:absolute; top:18px; left:18px; z-index:3;
+    display:none; align-items:center; gap:7px;
+    background:rgba(18,24,32,0.72); backdrop-filter:blur(8px);
+    color:#fff; font-size:0.72rem; font-weight:700; letter-spacing:0.12em;
+    padding:7px 14px; border-radius:var(--radius-pill);
+  }
+  .live-pill::before{
+    content:""; width:8px; height:8px; border-radius:50%;
+    background:#D6482F;
+  }
+  .watch-feature.is-live .live-pill{display:flex;}
+
+  .watch-reel-head{
+    display:flex; justify-content:space-between; align-items:baseline;
+    flex-wrap:wrap; gap:12px; margin:44px 0 18px;
+  }
+  .watch-reel-head h3{
+    font-family:var(--font-display); font-weight:600; font-size:1.5rem;
+  }
+  .watch-reel-link{
+    font-size:0.88rem; color:var(--gold); text-decoration:none; font-weight:600;
+  }
+  .watch-reel-link:hover{color:var(--gold-soft);}
+  .watch-reel{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(170px, 1fr));
+    gap:14px;
+  }
+  .watch-card{
+    background:var(--white);
+    border:1px solid var(--border);
+    border-radius:var(--radius-sm);
+    overflow:hidden;
+    text-decoration:none;
+    color:var(--ink);
+    transition:border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  }
+  .watch-card:hover{
+    border-color:var(--border-strong);
+    box-shadow:var(--shadow-sm);
+    transform:translateY(-2px);
+  }
+  .watch-card img{width:100%; aspect-ratio:16/9; object-fit:cover;}
+  .watch-card .t{
+    font-size:0.85rem; font-weight:600; line-height:1.4;
+    padding:12px 14px 2px;
+  }
+  .watch-card .m{
+    font-size:0.78rem; color:var(--muted);
+    padding:0 14px 14px;
+  }
+
+  @media (max-width:860px){
+    .watch-grid{grid-template-columns:1fr;}
+  }
+
+  /* ---- Giving ---- */
+  .giving{
+    background:var(--stone);
+    border-radius:24px;
+    padding:64px 6vw;
+    color:var(--ink);
+    display:grid;
+    grid-template-columns:1.2fr 0.8fr;
+    gap:48px;
+    align-items:center;
+    border:1px solid var(--border);
+  }
+  .giving .eyebrow-dark{color:var(--gold);}
+  .giving h2{color:var(--ink);}
+  .giving .lede{color:var(--muted);}
+
+  .give-card{
+    background:var(--white);
+    border:1px solid var(--border);
+    border-radius:var(--radius);
+    padding:28px;
+    box-shadow:var(--shadow-sm);
+  }
+  .give-card h4{
+    font-family:var(--font-display);
+    font-weight:600;
+    font-size:1.35rem;
+    margin-bottom:16px;
+  }
+  .give-card ol{
+    margin:0 0 22px 18px;
+    font-size:0.9rem;
+    line-height:1.75;
+    color:var(--muted);
+  }
+  .give-card ol strong{color:var(--ink);}
+  .give-card .btn-primary{width:100%;justify-content:center;}
+
+  @media (max-width:860px){
+    .giving{grid-template-columns:1fr; padding:48px 6vw;}
+  }
+
+  /* ---- Footer ---- */
+  footer{
+    background:var(--navy-deep);
+    color:rgba(255,255,255,0.65);
+    padding:72px 0 32px;
+  }
+  .footer-grid{
+    display:grid;
+    grid-template-columns:1.5fr 1fr 1fr 1fr;
+    gap:40px;
+    padding-bottom:48px;
+    border-bottom:1px solid rgba(255,255,255,0.08);
+  }
+  .footer-logo{
+    margin-bottom:16px;
+  }
+  .footer-logo img{
+    height:52px;
+    width:auto;
+    display:block;
+    /* Dark navy logo → white on deep footer */
+    filter:brightness(0) invert(1);
+    opacity:0.95;
+  }
+  .footer-tagline{font-size:0.88rem; color:rgba(255,255,255,0.55); line-height:1.65; max-width:280px;}
+  .footer-tagline a:hover{color:var(--gold-soft);}
+
+  .footer-col h5{
+    font-size:0.7rem;
+    text-transform:uppercase;
+    letter-spacing:0.14em;
+    color:rgba(255,255,255,0.4);
+    margin-bottom:18px;
+    font-weight:700;
+  }
+  .footer-col a{
+    display:block;
+    font-size:0.9rem;
+    color:rgba(255,255,255,0.7);
+    text-decoration:none;
+    margin-bottom:12px;
+    font-weight:500;
+    transition:color 0.2s ease;
+  }
+  .footer-col a:hover{color:#fff;}
+
+  .footer-bottom{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:14px;
+    padding-top:28px;
+    font-size:0.8rem;
+    color:rgba(255,255,255,0.4);
+  }
+  .footer-social{
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .footer-social a{
+    width:40px;
+    height:40px;
+    border-radius:50%;
+    border:1px solid rgba(255,255,255,0.14);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    text-decoration:none;
+    color:rgba(255,255,255,0.7);
+    background:rgba(255,255,255,0.04);
+    transition:border-color 0.2s ease, color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+  }
+  .footer-social a svg{
+    width:18px;
+    height:18px;
+    display:block;
+    fill:currentColor;
+  }
+  .footer-social a:hover{
+    border-color:var(--gold-soft);
+    color:var(--gold-soft);
+    background:rgba(196,169,116,0.1);
+    transform:translateY(-2px);
+  }
+  .footer-brand .footer-social{
+    margin-top:20px;
+  }
+
+  @media (max-width:860px){
+    .footer-grid{grid-template-columns:1fr 1fr;}
+  }
+  @media (max-width:560px){
+    .footer-grid{grid-template-columns:1fr;}
+  }
+
+  @media (max-width:640px){
+    section{padding:72px 0;}
+    section:has(.new-here){padding-bottom: 48px;}
+    #pastors{padding-top: 88px; padding-bottom: 88px;}
+    .hero-content{padding:0 6vw 14vw;}
+    .cta-row{flex-direction:column;align-items:stretch;}
+    .btn{width:100%;justify-content:center;}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .eyebrow, h1, .subhead, .arch-divider, .service-row, .cta-row, .new-pill{animation:none;opacity:1;}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ NAV ============ -->
+<nav id="siteNav">
+  <a href="#welcome" class="nav-logo" aria-label="GateWay City Church Las Vegas">
+    <img src="https://images.squarespace-cdn.com/content/v1/5c898d8c65019f5841c0cb70/1552519144178-11JIKOEENJ7VCCWPG6YM/GateWayLogo.png?format=500w" alt="GateWay City Church">
+  </a>
+
+  <div class="nav-right">
+  <ul class="nav-links">
+    <li><a href="#welcome">About <span class="caret"></span></a>
+      <div class="mega">
+        <div class="mega-label">GateWay Vegas</div>
+        <a href="#welcome">Welcome</a>
+        <a href="#pastors">Campus Pastors</a>
+        <a href="#new-here">I'm New Here</a>
+        <a href="https://mygatewaycity.church/jesus">Who Is Jesus?</a>
+        <a href="https://www.gatewayschoolofministry.com/">School of Ministry</a>
+        <div class="mega-label">Locations</div>
+        <a href="https://mygatewaycity.church/sanjose">San Jose, CA</a>
+        <a href="https://mygatewaycity.church/santarosa">Santa Rosa, CA</a>
+        <a href="https://mygatewaycity.church/fresnoclovis">Fresno-Clovis, CA</a>
+        <a href="https://mygatewaycity.church/modesto">Modesto, CA</a>
+        <a href="https://mygatewaycity.church/hollister">Hollister, CA</a>
+        <a href="https://mygatewaycity.church/arizona">Mesa, AZ</a>
+      </div>
+    </li>
+    <li><a href="#ministries">Ministries <span class="caret"></span></a>
+      <div class="mega">
+        <a href="#ministries">Breakout Life Group</a>
+        <a href="#ministries">Teen Break Out</a>
+        <a href="#ministries">Gateway Kids</a>
+      </div>
+    </li>
+    <li><a href="#events">Events</a></li>
+    <li><a href="#watch">Watch <span class="caret"></span></a>
+      <div class="mega">
+        <a href="https://www.youtube.com/@gatewaycitychurchlasvegas">Watch Live</a>
+        <a href="https://www.youtube.com/@gatewaycitychurchlasvegas/videos">Recent Sermons</a>
+      </div>
+    </li>
+    <li><a href="#give">Give</a></li>
+    <li><a href="https://mygatewaycity.church/lasvegas-contact-us">Contact <span class="caret"></span></a>
+      <div class="mega">
+        <a href="https://mygatewaycity.church/lasvegas-contact-us">Contact Us</a>
+        <a href="tel:+17028815623">(702) 881-5623</a>
+        <a href="mailto:lasvegas.comms@gatewaycitychurch.org">Email Us</a>
+        <a href="https://maps.app.goo.gl/5cjQNMxaR6ja3JGC9" target="_blank" rel="noopener">Get Directions</a>
+      </div>
+    </li>
+  </ul>
+
+  <div class="nav-utility">
+    <div class="nav-search" id="navSearch">
+      <input type="text" id="siteSearchInput" placeholder="Search the site..." autocomplete="off">
+      <div class="search-results" id="searchResults"></div>
+      <button class="icon-btn" id="searchToggle" aria-label="Search">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/>
+          <path d="M21 21L16.65 16.65" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <a href="#new-here" class="nav-cta">Plan Your Visit</a>
+  </div>
+
+  <button class="nav-burger" aria-label="Menu"><span></span><span></span></button>
+</nav>
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div id="mosaic"></div>
+
+  <div id="heroIntro"><img src="assets/gateway-logo.png" alt="GateWay City Church"></div>
+  <div id="heroDark"></div>
+
+  <div class="hero-content hero-content-centered">
+    <h1>Welcome Home</h1>
+    <a href="#new-here" class="new-pill">New to GateWay?</a>
+  </div>
+
+  <button class="play-toggle is-playing" id="playToggle" aria-label="Play or pause background video">
+    <span class="icon-play"></span>
+    <span class="icon-pause"><span></span><span></span></span>
+  </button>
+
+</section>
+
+<!-- ============ WELCOME (NewSpring-style photography block) ============ -->
+<div class="page-body">
+<div class="hero-cards">
+  <a href="#new-here" class="hero-card">
+    <h4>Service Times</h4>
+    <p>Sundays &middot; 10:00 AM English Service<br>Sundays &middot; 1:00 PM Spanish Service</p>
+  </a>
+  <a href="https://www.youtube.com/@gatewaycitychurchlasvegas" class="hero-card">
+    <h4>Watch Online</h4>
+    <p>Can't make it in person? Join us live or catch up on recent messages.</p>
+  </a>
+  <a href="https://mygatewaycity.church/jesus" class="hero-card">
+    <h4>Who Is Jesus?</h4>
+    <p>New to faith, or just curious? Start here, no pressure, no pretending.</p>
+  </a>
+</div>
+<section id="welcome" class="wrap">
+  <div class="welcome">
+    <div class="welcome-copy">
+      <div class="eyebrow-dark">Welcome Home</div>
+      <h2>A church for <em>all people</em>, right here in Las Vegas.</h2>
+      <p class="lede">We are a church for all people, with a heart to see lives changed by Jesus as we move forward together, right here in Las Vegas, NV. Whatever brought you here today, we're glad you came — there's a place for you at GateWay.</p>
+    </div>
+    <div class="welcome-media">
+      <div class="welcome-photo">
+        <video autoplay muted loop playsinline src="https://videos.pexels.com/video-files/12991839/12991839-hd_1920_1080_60fps.mp4"></video>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ I'M NEW HERE ============ -->
+<section class="wrap">
+  <div class="new-here" id="new-here">
+    <div>
+      <div class="eyebrow-dark" >
+        I'm New Here
+      </div>
+      <h2>Whether you're new to Jesus, or new to <em>our church</em>, we can't wait to meet you.</h2>
+      <p class="lede">The best way to get started is to attend Grow Tracks and join our Wednesday night Life Group. Still have questions? Reach out, we'd love to help.</p>
+      <div class="cta-row" style="margin-top:30px;opacity:1;animation:none;">
+        <a href="grow-tracks.html" class="btn btn-primary">Take Grow Tracks &rarr;</a>
+        <a href="https://mygatewaycity.church/lasvegas-contact-us" class="btn btn-secondary">Contact Us</a>
+      </div>
+    </div>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">01</div>
+        <div>
+          <p><strong>Come as you are</strong>Join us Sunday — 10:00 AM English Service or 1:00 PM Spanish Service. No dress code, no expectations.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <div>
+          <p><strong>Take Grow Tracks</strong>A simple next step to learn who we are and how to plug in.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <div>
+          <p><strong>Join a Life Group</strong>Wednesdays at 7:00 PM, connection, community, and growth.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CAMPUS PASTORS ============ -->
+<section id="pastors" class="wrap">
+  <div class="pastors">
+    <div class="pastor-photo">
+      <img src="https://images.squarespace-cdn.com/content/v1/5c898d8c65019f5841c0cb70/73c6d985-a4d3-442a-9563-efee56bbe72a/P.+Danny+%26+Margaret+Hand.jpg" alt="Pastor Danny and Margaret Hand">
+    </div>
+    <div>
+      <div class="eyebrow-dark">Campus Pastors</div>
+      <h2>Pastor Danny &amp; <em>Margaret Hand</em></h2>
+      <p class="lede">Pastor Danny and Margaret Hand have been pastoring in Las Vegas for 23 years. They strongly believe that Christians are to be the &ldquo;best of the best&rdquo; — free from addictions and all forms of bondage. Danny is a coach at heart who wants to pull God's potential out of everybody who wants to be discipled. He is building and training a team of radical Christians who love God, His people, and have a heart for souls.</p>
+      <p class="pastor-quote">"Our mission is simply to Raise Up Champions for Christ."</p>
+    </div>
+  </div>
+
+  <div class="pastors">
+    <div class="pastor-photo">
+      <img src="assets/pastor-paul.jpg" alt="Pastor Paul" class="face-focus">
+    </div>
+    <div>
+      <div class="eyebrow-dark">Pastoral Team</div>
+      <h2>Pastor <em>Paul</em></h2>
+      <p class="lede">Pastor Paul serves on the GateWay Las Vegas pastoral team, helping care for people and advance the mission of the church. He is committed to raising up believers who love God, love people, and walk in freedom.</p>
+      <p class="placeholder-tag" style="margin-top:14px;">Title &amp; full bio coming soon</p>
+    </div>
+  </div>
+
+  <div class="pastors">
+    <div class="pastor-photo">
+      <img src="assets/pastor-fred.jpg" alt="Pastor Fred Corona">
+    </div>
+    <div>
+      <div class="eyebrow-dark">Pastoral Team</div>
+      <h2>Pastor Fred <em>Corona</em></h2>
+      <p class="lede">Pastor Fred Corona serves alongside the Hand family, helping lead and care for the GateWay Las Vegas family. He has a heart for people, for the local church, and for seeing lives transformed by Jesus right here in our city.</p>
+      <p class="placeholder-tag" style="margin-top:14px;">Title &amp; full bio coming soon</p>
+    </div>
+  </div>
+
+  <div class="parent-note">
+    <p><strong>Part of something bigger.</strong> GateWay Vegas is one of seven GateWay City Church campuses across California, Arizona, and Nevada. The wider church family is led by Lead Pastors David and Kathy Cannistraci, who have guided GateWay's growth and care for over 30 years, since its earliest days in 1966 as a 60-member gathering in Sunnyvale, California called Calvary Gospel Temple. GateWay City Church is also part of Ministers Fellowship International, a worldwide family of pastors and leaders.</p>
+  </div>
+</section>
+
+<!-- ============ MINISTRIES (Elevation-style card grid) ============ -->
+<section id="ministries" class="wrap">
+  <div class="ministries-header">
+    <div class="eyebrow-dark" style="justify-content:center;">Get Connected</div>
+    <h2>Find your <em>next step</em></h2>
+    <p class="lede">A few of the ways to plug in and grow at GateWay Las Vegas.</p>
+  </div>
+
+  <div class="ministry-grid">
+    <div class="ministry-card">
+      <video autoplay muted loop playsinline src="https://videos.pexels.com/video-files/7411164/7411164-uhd_2560_1440_30fps.mp4"></video>
+      <div class="ministry-card-content">
+        <span class="ministry-tag">Wednesdays · 7:00 PM</span>
+        <h3>Breakout Life Group</h3>
+        <p>Are you looking for a place to belong? Our Wednesday night Life Group is the perfect place to find connection, share struggles, and do life together. Join us as we grow together in our faith, find freedom, and discover our purpose.</p>
+      </div>
+    </div>
+
+    <div class="ministry-card">
+      <video autoplay muted loop playsinline src="https://videos.pexels.com/video-files/33743585/14326165_2726_1440_30fps.mp4"></video>
+      <div class="ministry-card-content">
+        <span class="ministry-tag">Every 2nd &amp; 4th Sunday · 10:45 AM – 11:45 AM</span>
+        <h3>Teen Break Out</h3>
+        <p>Calling all Jr. High &amp; High Schoolers! Join us for a fun and engaging experience every 2nd and 4th Sunday, 10:45 AM – 11:45 AM.</p>
+      </div>
+    </div>
+
+    <div class="ministry-card">
+      <video autoplay muted loop playsinline src="https://videos.pexels.com/video-files/12695734/12695734-hd_1920_1080_24fps.mp4"></video>
+      <div class="ministry-card-content">
+        <span class="ministry-tag">Every Sunday · Morning Services</span>
+        <h3>Gateway Kids</h3>
+        <p>Gateway Kids is for kids up through 5th grade. Every Sunday during morning services, your kids get to learn about the Bible in a fun, safe, and age-appropriate environment.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ TEAM GATEWAY (click to reveal) ============ -->
+<section class="wrap">
+  <div class="serve-block">
+    <div>
+      <div class="eyebrow-dark">Serve</div>
+      <h2>Become part of <em>Team GateWay</em></h2>
+      <p class="lede">Team GateWay is made up of hundreds of volunteers who call GateWay home. This is the team that makes church happen on Sundays and all throughout the week, and there's a place on it for you.</p>
+      <button type="button" class="btn btn-primary" id="teamGatewayBtn" style="margin-top:22px;border:none;">See Serving Opportunities</button>
+    </div>
+
+    <div id="teamGatewayGrid" class="serve-grid">
+      <div class="serve-card">
+        <h4>Prayer Team</h4>
+        <p>This team of trained intercessors covers the weekend services in prayer and prays for people at the close of each service.</p>
+      </div>
+      <div class="serve-card">
+        <h4>Safety Team</h4>
+        <p>We take the safety of all our members, adults and children, seriously. This team helps create a secure environment and stands ready to assist on Sunday mornings.</p>
+      </div>
+      <div class="serve-card">
+        <h4>Ushers Team</h4>
+        <p>Our ushers help manage the large number of attendees in our services, assisting with seating, serving communion, and supporting our prayer teams.</p>
+      </div>
+      <div class="serve-card">
+        <h4>Welcome Team</h4>
+        <p>Guest parking, greeters, and welcome center hosts. First impressions matter, and this team helps every new guest feel right at home.</p>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- ============ EVENTS (filterable, editorial band) ============ -->
+<section id="events" class="events-band">
+  <div class="events-inner">
+    <div class="events-top">
+      <div>
+        <div class="eyebrow-dark">What's Happening</div>
+        <h2>Upcoming <em>Events</em></h2>
+        <p class="lede">From weekly rhythms to Community Nights — here's what's coming up at GateWay Vegas.</p>
+      </div>
+      <div class="event-filters" id="eventFilters">
+        <button class="filter-chip active" data-filter="all">All</button>
+        <button class="filter-chip" data-filter="weekly">Weekly</button>
+        <button class="filter-chip" data-filter="community">Community Nights</button>
+        <button class="filter-chip" data-filter="kids">Kids &amp; Students</button>
+        <button class="filter-chip" data-filter="special">Special</button>
+      </div>
+    </div>
+
+    <div class="event-grid" id="eventGrid">
+      <div class="event-card" data-category="weekly">
+        <div class="event-date"><span class="event-day">Wed</span><span class="event-num">Weekly</span></div>
+        <div class="event-body">
+          <span class="event-tag">Life Group</span>
+          <h3>Breakout Life Group</h3>
+          <p>7:00 PM · Connection, community, and growth every Wednesday night.</p>
+        </div>
+        <div class="event-arrow" aria-hidden="true">→</div>
+      </div>
+
+      <div class="event-card" data-category="kids weekly">
+        <div class="event-date"><span class="event-day">Sun</span><span class="event-num">Weekly</span></div>
+        <div class="event-body">
+          <span class="event-tag">Kids</span>
+          <h3>Gateway Kids</h3>
+          <p>During morning services · Bible teaching in a fun, safe environment through 5th grade.</p>
+        </div>
+        <div class="event-arrow" aria-hidden="true">→</div>
+      </div>
+
+      <div class="event-card" data-category="kids">
+        <div class="event-date"><span class="event-day">Sun</span><span class="event-num">2nd &amp; 4th</span></div>
+        <div class="event-body">
+          <span class="event-tag">Students</span>
+          <h3>Teen Break Out</h3>
+          <p>Every 2nd &amp; 4th Sunday · 10:45 AM – 11:45 AM · Jr. High &amp; High School.</p>
+        </div>
+        <div class="event-arrow" aria-hidden="true">→</div>
+      </div>
+
+      <div class="event-card" data-category="community">
+        <div class="event-date"><span class="event-day">Soon</span><span class="event-num">TBD</span></div>
+        <div class="event-body">
+          <span class="event-tag">Community Night</span>
+          <h3>Community Night</h3>
+          <p class="placeholder-tag">Date &amp; details coming soon</p>
+          <p>Food, connection, and fun for the whole GateWay family. Watch this space for the next one.</p>
+        </div>
+        <div class="event-arrow" aria-hidden="true">→</div>
+      </div>
+
+      <div class="event-card" data-category="special">
+        <div class="event-date"><span class="event-day">Soon</span><span class="event-num">TBD</span></div>
+        <div class="event-body">
+          <span class="event-tag">Special</span>
+          <h3>Water Baptism Sunday</h3>
+          <p class="placeholder-tag">Date &amp; details coming soon</p>
+          <p>Taking your next step publicly. Reach out to our team to get on the list.</p>
+        </div>
+        <div class="event-arrow" aria-hidden="true">→</div>
+      </div>
+    </div>
+
+    <div class="event-empty" id="eventEmpty">No events match that filter yet — check back soon.</div>
+  </div>
+</section>
+
+<section id="watch" class="watch">
+  <div class="wrap">
+    <div class="watch-header">
+      <div>
+        <div class="eyebrow-dark" >
+          Watch
+        </div>
+        <h2>Can't make it in <em>person?</em></h2>
+      </div>
+      <p class="lede" >Join us live, or catch up on recent messages anytime.</p>
+    </div>
+
+    <div class="watch-grid">
+      <a href="https://www.youtube.com/@gatewaycitychurchlasvegas/streams" id="watchFeature" class="watch-feature">
+        <video autoplay muted loop playsinline src="https://videos.pexels.com/video-files/7411164/7411164-uhd_2560_1440_30fps.mp4"></video>
+        <span class="live-pill">LIVE</span>
+        <div class="watch-feature-content">
+          <div class="play-btn"></div>
+          <h3 class="watch-feature-title" id="watchFeatureTitle">Watch Live Sundays</h3>
+          <p class="watch-feature-meta" id="watchFeatureMeta">10:00 AM English Service &middot; 1:00 PM Spanish Service</p>
+        </div>
+      </a>
+
+      <div class="watch-side">
+        <a href="https://www.youtube.com/@gatewaycitychurchlasvegas/videos" class="watch-link-card">
+          <div>
+            <h4>Recent Sermons</h4>
+            <p>Catch up on the latest messages from GateWay</p>
+          </div>
+          <span class="watch-link-arrow">&rarr;</span>
+        </a>
+        <a href="grow-tracks.html" class="watch-link-card">
+          <div>
+            <h4>Grow Tracks</h4>
+            <p>Your next step to get connected</p>
+          </div>
+          <span class="watch-link-arrow">&rarr;</span>
+        </a>
+        <a href="https://gatewaycity.churchcenter.com/home" class="watch-link-card">
+          <div>
+            <h4>Church Center</h4>
+            <p>Log in, give, and stay in the loop</p>
+          </div>
+          <span class="watch-link-arrow">&rarr;</span>
+        </a>
+      </div>
+    </div>
+
+    <div class="watch-reel-head">
+      <h3>Recent services</h3>
+      <a class="watch-reel-link" href="https://www.youtube.com/@gatewaycitychurchlasvegas/streams" target="_blank" rel="noopener">All streams &rarr;</a>
+    </div>
+    <div class="watch-reel" id="watchReel"></div>
+  </div>
+</section>
+
+<!-- ============ GIVING ============ -->
+<section class="wrap">
+  <div class="giving" id="give">
+    <div>
+      <div class="eyebrow-dark">Giving</div>
+      <h2>Help us reach the city of <em>Las Vegas.</em></h2>
+      <p class="lede">Would you consider giving financially to help reach the city of Las Vegas? Your generosity is greatly appreciated. You can give in person during our weekend services, online, or by texting GIVE to 855-783-4456.</p>
+    </div>
+
+    <div class="give-card">
+      <h4>Text to Give</h4>
+      <ol>
+        <li>Open your messages app</li>
+        <li>Send a new message to: <strong>855-783-4456</strong></li>
+        <li>In the message box type: <strong>GIVE</strong></li>
+        <li>Click on the link that pops up to complete your donation</li>
+      </ol>
+      <a href="https://give.tithe.ly/?formId=8d5c2d54-cee2-4c1d-9411-857b559a804a" target="_blank" rel="noopener" class="btn btn-primary" >Give Online &rarr;</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="wrap">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <div class="footer-logo">
+          <img src="https://images.squarespace-cdn.com/content/v1/5c898d8c65019f5841c0cb70/1552519144178-11JIKOEENJ7VCCWPG6YM/GateWayLogo.png?format=500w" alt="GateWay City Church">
+        </div>
+        <p class="footer-tagline">Inspiring Transformed Lives</p>
+        <p class="footer-tagline" style="margin-top:10px;">3630 N. Rancho Drive #112<br>Las Vegas, Nevada 89130</p>
+        <p class="footer-tagline" style="margin-top:10px;">
+          <a href="tel:+17028815623" style="text-decoration:none;color:inherit;">(702) 881-5623</a><br>
+          <a href="mailto:lasvegas.comms@gatewaycitychurch.org" style="text-decoration:none;color:inherit;">lasvegas.comms@gatewaycitychurch.org</a>
+        </p>
+        <div class="footer-social">
+          <a href="https://www.youtube.com/@gatewaycitychurchlasvegas" target="_blank" rel="noopener" aria-label="YouTube">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31.5 31.5 0 0 0 0 12a31.5 31.5 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31.5 31.5 0 0 0 24 12a31.5 31.5 0 0 0-.5-5.8zM9.8 15.5v-7l6.2 3.5-6.2 3.5z"/></svg>
+          </a>
+          <a href="https://www.instagram.com/gatewaycitylasvegas" target="_blank" rel="noopener" aria-label="Instagram">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.2c3.2 0 3.6 0 4.9.1 1.2.1 1.8.2 2.2.4.6.2 1 .5 1.5 1 .4.4.7.9 1 1.5.2.4.4 1.1.4 2.2.1 1.3.1 1.7.1 4.9s0 3.6-.1 4.9c-.1 1.2-.2 1.8-.4 2.2-.2.6-.5 1-1 1.5-.4.4-.9.7-1.5 1-.4.2-1.1.4-2.2.4-1.3.1-1.7.1-4.9.1s-3.6 0-4.9-.1c-1.2-.1-1.8-.2-2.2-.4a4 4 0 0 1-1.5-1 4 4 0 0 1-1-1.5c-.2-.4-.4-1.1-.4-2.2-.1-1.3-.1-1.7-.1-4.9s0-3.6.1-4.9c.1-1.2.2-1.8.4-2.2.2-.6.5-1 1-1.5.4-.4.9-.7 1.5-1 .4-.2 1.1-.4 2.2-.4C8.4 2.2 8.8 2.2 12 2.2zm0 1.8c-3.2 0-3.5 0-4.8.1-1 .1-1.6.2-2 .4-.5.2-.8.4-1.2.8-.4.4-.6.7-.8 1.2-.2.4-.3 1-.4 2-.1 1.3-.1 1.6-.1 4.8s0 3.5.1 4.8c.1 1 .2 1.6.4 2 .2.5.4.8.8 1.2.4.4.7.6 1.2.8.4.2 1 .3 2 .4 1.3.1 1.6.1 4.8.1s3.5 0 4.8-.1c1-.1 1.6-.2 2-.4.5-.2.8-.4 1.2-.8.4-.4.6-.7.8-1.2.2-.4.3-1 .4-2 .1-1.3.1-1.6.1-4.8s0-3.5-.1-4.8c-.1-1-.2-1.6-.4-2a2.7 2.7 0 0 0-.8-1.2 2.7 2.7 0 0 0-1.2-.8c-.4-.2-1-.3-2-.4-1.3-.1-1.6-.1-4.8-.1zm0 3.1a5 5 0 1 1 0 9.9 5 5 0 0 1 0-9.9zm0 1.8a3.2 3.2 0 1 0 0 6.3 3.2 3.2 0 0 0 0-6.3zm6.4-2a1.2 1.2 0 1 1 0 2.3 1.2 1.2 0 0 1 0-2.3z"/></svg>
+          </a>
+          <a href="https://www.facebook.com/GatewayCityLV" target="_blank" rel="noopener" aria-label="Facebook">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 8.2h2.3V5H14c-2.5 0-4.2 1.7-4.2 4.3V11H7.5v3.3h2.3V20h3.4v-5.7h2.7l.5-3.3h-3.2V9.3c0-.7.3-1.1 1-1.1z"/></svg>
+          </a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h5>About</h5>
+        <a href="https://mygatewaycity.church/about">About Us</a>
+        <a href="https://mygatewaycity.church/findalocation">Locations</a>
+        <a href="https://mygatewaycity.church/david-kathy">Our Pastors</a>
+        <a href="https://mygatewaycity.church/beliefs">What We Believe</a>
+        <a href="https://mygatewaycity.church/lasvegas-contact-us">Contact Us</a>
+      </div>
+      <div class="footer-col">
+        <h5>Quick Links</h5>
+        <a href="https://mygatewaycity.church/im-new-here">I'm New Here</a>
+        <a href="grow-tracks.html">Grow Tracks</a>
+        <a href="https://mygatewaycity.church/teamgateway">Team Gateway</a>
+        <a href="https://mygatewaycity.church/kids">Gateway Kids</a>
+        <a href="https://gatewaycity.churchcenter.com/home">Church Center Login</a>
+        <a href="https://mygatewaycity.church/jobs">Gateway Employment</a>
+      </div>
+      <div class="footer-col">
+        <h5>Visit Us</h5>
+        <a href="#" style="pointer-events:none;">Sun 10:00 AM · English Service</a>
+        <a href="#" style="pointer-events:none;">Sun 1:00 PM · Spanish Service</a>
+        <a href="#" style="pointer-events:none;">Wed 7:00 PM · Breakout Life Group</a>
+        <a href="tel:+17028815623">(702) 881-5623</a>
+        <a href="mailto:lasvegas.comms@gatewaycitychurch.org">Email Us</a>
+        <a href="https://maps.app.goo.gl/5cjQNMxaR6ja3JGC9" target="_blank" rel="noopener">Get Directions</a>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div>&copy;2026 Gateway City Church. All Rights Reserved.<br><span style="opacity:.75;font-size:.9em;">Gateway City Church Las Vegas is a Nevada domestic nonprofit corporation.</span></div>
+      <div class="footer-social">
+        <a href="https://www.youtube.com/@gatewaycitychurchlasvegas" target="_blank" rel="noopener" aria-label="YouTube">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31.5 31.5 0 0 0 0 12a31.5 31.5 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31.5 31.5 0 0 0 24 12a31.5 31.5 0 0 0-.5-5.8zM9.8 15.5v-7l6.2 3.5-6.2 3.5z"/></svg>
+        </a>
+        <a href="https://www.instagram.com/gatewaycitylasvegas" target="_blank" rel="noopener" aria-label="Instagram">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.2c3.2 0 3.6 0 4.9.1 1.2.1 1.8.2 2.2.4.6.2 1 .5 1.5 1 .4.4.7.9 1 1.5.2.4.4 1.1.4 2.2.1 1.3.1 1.7.1 4.9s0 3.6-.1 4.9c-.1 1.2-.2 1.8-.4 2.2-.2.6-.5 1-1 1.5-.4.4-.9.7-1.5 1-.4.2-1.1.4-2.2.4-1.3.1-1.7.1-4.9.1s-3.6 0-4.9-.1c-1.2-.1-1.8-.2-2.2-.4a4 4 0 0 1-1.5-1 4 4 0 0 1-1-1.5c-.2-.4-.4-1.1-.4-2.2-.1-1.3-.1-1.7-.1-4.9s0-3.6.1-4.9c.1-1.2.2-1.8.4-2.2.2-.6.5-1 1-1.5.4-.4.9-.7 1.5-1 .4-.2 1.1-.4 2.2-.4C8.4 2.2 8.8 2.2 12 2.2zm0 1.8c-3.2 0-3.5 0-4.8.1-1 .1-1.6.2-2 .4-.5.2-.8.4-1.2.8-.4.4-.6.7-.8 1.2-.2.4-.3 1-.4 2-.1 1.3-.1 1.6-.1 4.8s0 3.5.1 4.8c.1 1 .2 1.6.4 2 .2.5.4.8.8 1.2.4.4.7.6 1.2.8.4.2 1 .3 2 .4 1.3.1 1.6.1 4.8.1s3.5 0 4.8-.1c1-.1 1.6-.2 2-.4.5-.2.8-.4 1.2-.8.4-.4.6-.7.8-1.2.2-.4.3-1 .4-2 .1-1.3.1-1.6.1-4.8s0-3.5-.1-4.8c-.1-1-.2-1.6-.4-2a2.7 2.7 0 0 0-.8-1.2 2.7 2.7 0 0 0-1.2-.8c-.4-.2-1-.3-2-.4-1.3-.1-1.6-.1-4.8-.1zm0 3.1a5 5 0 1 1 0 9.9 5 5 0 0 1 0-9.9zm0 1.8a3.2 3.2 0 1 0 0 6.3 3.2 3.2 0 0 0 0-6.3zm6.4-2a1.2 1.2 0 1 1 0 2.3 1.2 1.2 0 0 1 0-2.3z"/></svg>
+        </a>
+        <a href="https://www.facebook.com/GatewayCityLV" target="_blank" rel="noopener" aria-label="Facebook">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 8.2h2.3V5H14c-2.5 0-4.2 1.7-4.2 4.3V11H7.5v3.3h2.3V20h3.4v-5.7h2.7l.5-3.3h-3.2V9.3c0-.7.3-1.1 1-1.1z"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
+</div>
+
+<script>
+  // ---- Team GateWay: click to reveal serving opportunities ----
+  const teamBtn = document.getElementById('teamGatewayBtn');
+  const teamGrid = document.getElementById('teamGatewayGrid');
+  teamBtn.addEventListener('click', () => {
+    const opening = !teamGrid.classList.contains('open');
+    teamGrid.classList.toggle('open');
+    teamBtn.textContent = opening ? 'Hide Serving Opportunities' : 'See Serving Opportunities';
+  });
+
+  // ---- Events: interactive filtering ----
+  const filterChips = document.querySelectorAll('.filter-chip');
+  const eventCards = document.querySelectorAll('.event-card');
+  const eventEmpty = document.getElementById('eventEmpty');
+
+  filterChips.forEach(chip => {
+    chip.addEventListener('click', () => {
+      filterChips.forEach(c => c.classList.remove('active'));
+      chip.classList.add('active');
+      const filter = chip.dataset.filter;
+      let visibleCount = 0;
+
+      eventCards.forEach(card => {
+        const categories = card.dataset.category.split(' ');
+        const matches = filter === 'all' || categories.includes(filter);
+        card.classList.toggle('hidden-filter', !matches);
+        if (matches) visibleCount++;
+      });
+
+      eventEmpty.classList.toggle('show', visibleCount === 0);
+    });
+  });
+
+  // ---- Nav: solid background after scrolling, and hides/reveals based
+  // on scroll direction. Visible near the top always; once you're past
+  // that, it hides while scrolling down and slides back in the moment
+  // you scroll up. ----
+  const nav = document.getElementById('siteNav');
+  let lastScrollY = window.scrollY;
+  const SCROLL_THRESHOLD = 60;
+
+  window.addEventListener('scroll', () => {
+    const currentY = window.scrollY;
+    nav.classList.toggle('solid', currentY > SCROLL_THRESHOLD);
+
+    if (currentY <= SCROLL_THRESHOLD){
+      nav.classList.remove('nav-hidden');
+    } else if (currentY < lastScrollY){
+      nav.classList.remove('nav-hidden'); // scrolling up: reveal
+    } else if (currentY > lastScrollY){
+      nav.classList.add('nav-hidden'); // scrolling down: hide
+    }
+    lastScrollY = currentY;
+  });
+
+  // ---- Site search: lightweight client-side jump-to-section search ----
+  const SEARCH_INDEX = [
+    { label: 'Service Times', url: '#new-here' },
+    { label: "I'm New Here", url: '#new-here' },
+    { label: 'Grow Tracks', url: 'grow-tracks.html' },
+    { label: 'Campus Pastors', url: '#pastors' },
+    { label: 'Ministries', url: '#ministries' },
+    { label: 'Team GateWay / Serving', url: '#ministries' },
+    { label: 'Events', url: '#events' },
+    { label: 'Watch Online', url: '#watch' },
+    { label: 'Giving', url: '#give' },
+    { label: 'Contact Us', url: 'https://mygatewaycity.church/lasvegas-contact-us' },
+    { label: 'Phone (702) 881-5623', url: 'tel:+17028815623' },
+    { label: 'Email', url: 'mailto:lasvegas.comms@gatewaycitychurch.org' },
+    { label: 'Directions', url: 'https://maps.app.goo.gl/5cjQNMxaR6ja3JGC9' }
+  ];
+
+  const searchInput = document.getElementById('siteSearchInput');
+  const searchResults = document.getElementById('searchResults');
+  const searchToggle = document.getElementById('searchToggle');
+  const navSearch = document.getElementById('navSearch');
+
+  searchToggle.addEventListener('click', (e) => {
+    e.stopPropagation();
+    navSearch.classList.toggle('open');
+    if (navSearch.classList.contains('open')) searchInput.focus();
+  });
+
+  searchInput.addEventListener('input', () => {
+    const q = searchInput.value.trim().toLowerCase();
+    if (!q){
+      searchResults.classList.remove('show');
+      searchResults.innerHTML = '';
+      return;
+    }
+    const matches = SEARCH_INDEX.filter(item => item.label.toLowerCase().includes(q));
+    if (matches.length === 0){
+      searchResults.innerHTML = '<a>No matches found</a>';
+    } else {
+      searchResults.innerHTML = matches.map(m => `<a href="${m.url}">${m.label}</a>`).join('');
+    }
+    searchResults.classList.add('show');
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.nav-search')){
+      searchResults.classList.remove('show');
+      navSearch.classList.remove('open');
+    }
+  });
+
+  // ---- Hero: cinematic intro ----
+  // White-logo splash -> the church clip plays its full length through the
+  // end-card logo -> the page dissolves the logo to black -> the hero copy
+  // fades in over the dark. NOTHING else ever plays in the hero: no stock
+  // clips, no rotation. Runs on EVERY load. ?intro=0 or ?skip skips it, so
+  // does Esc/Enter/Space or a hero click mid-intro.
+  const FEATURE_CLIP = 'assets/august-2-2026.mp4';
+  const COPY_DELAY_MS = 1200;      // black settles before the copy fades in
+  const FEATURE_SAFETY_MS = 30000; // finish anyway if the file stalls
+
+  const mosaic = document.getElementById('mosaic');
+  const heroSection = document.querySelector('.hero');
+  const introEl = document.getElementById('heroIntro');
+  const darkEl = document.getElementById('heroDark');
+
+  const introParams = new URLSearchParams(location.search);
+  let introMode = !(introParams.get('intro') === '0' || introParams.has('skip'));
+  let outroStarted = false;
+  let safetyTimer = null;
+  let introVideo = null;
+
+  function dismissSplash(){
+    if (!introEl || !introEl.isConnected) return;
+    introEl.classList.add('fade');
+    setTimeout(() => introEl.remove(), 1100);
+  }
+
+  // fade the splash once the clip is actually rendering frames — never under
+  // 900ms so it doesn't blink, never past 4s so a stalled file can't trap it
+  function armSplash(video){
+    let done = false;
+    const t0 = performance.now();
+    const go = () => {
+      if (done) return;
+      done = true;
+      setTimeout(dismissSplash, Math.max(0, 900 - (performance.now() - t0)));
+    };
+    if (video.readyState >= 3) go();
+    else {
+      video.addEventListener('canplay', go, { once: true });
+      setTimeout(go, 4000);
+    }
+  }
+
+  // the ending: dissolve the logo end-card to black, THEN fade the copy in
+  function beginOutro(){
+    if (outroStarted) return;
+    outroStarted = true;
+    clearTimeout(safetyTimer);
+    darkEl.classList.add('on');
+    setTimeout(() => {
+      introMode = false;
+      heroSection.classList.remove('intro-running');
+      dismissSplash();
+      if (introVideo) introVideo.remove(); // black is opaque, the clip is done
+    }, COPY_DELAY_MS);
+  }
+
+  function skipIntro(){
+    if (!introMode || outroStarted) return;
+    darkEl.classList.add('instant');
+    beginOutro();
+  }
+
+  if (introMode){
+    heroSection.classList.add('intro-running');
+    introVideo = document.createElement('video');
+    introVideo.src = FEATURE_CLIP;
+    introVideo.muted = true;
+    introVideo.setAttribute('muted', '');       // Chrome wants the attribute, not just the property
+    introVideo.setAttribute('playsinline', '');
+    introVideo.playsInline = true;
+    introVideo.preload = 'auto';
+    mosaic.appendChild(introVideo);
+    introVideo.onended = beginOutro;
+    introVideo.onerror = skipIntro;
+    // drive playback explicitly — autoplay on dynamically created videos is
+    // unreliable in Chrome, so kick play() now and again as data arrives
+    const kick = () => { if (introVideo.paused && !outroStarted) introVideo.play().catch(() => {}); };
+    kick();
+    introVideo.addEventListener('canplay', kick);
+    setTimeout(kick, 800);
+    setTimeout(kick, 2500);
+    armSplash(introVideo);
+    safetyTimer = setTimeout(beginOutro, FEATURE_SAFETY_MS);
+  } else {
+    if (introEl) introEl.remove();
+    darkEl.classList.add('instant', 'on');
+  }
+
+  window.addEventListener('keydown', (e) => {
+    if (introMode && !outroStarted && (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ')){
+      e.preventDefault();
+      skipIntro();
+    }
+  });
+
+  heroSection.addEventListener('click', (e) => {
+    if (e.target.closest('.hero-content, .topbar')) return;
+    if (introMode && !outroStarted) skipIntro(); // a click during the intro skips it
+  });
+</script>
+
+<script>
+(function () {
+  var CHANNEL_ID = 'UCzBSLVhkfYqJWyA1KG4qa8A';
+  var FEED = 'https://jtifhcvbgxqwlywugvjv.supabase.co/functions/v1/gcc-youtube-feed';
+  var ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp0aWZoY3ZiZ3hxd2x5d3Vndmp2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI1MDc5NTgsImV4cCI6MjA4ODA4Mzk1OH0.UfRVLuvM8_HPvKXUEDXb0cxR50znv16L5Tf99AnSc7g';
+
+  var FALLBACK = [
+    { videoId: '-OCQ_WP8g64', title: 'Sunday 10am Combined Service', published: '2026-08-30T17:00:01+00:00' },
+    { videoId: '31aw_7PAgdQ', title: 'Midweek Fuel-Up Wed Service', published: '2026-08-27T16:12:46+00:00' },
+    { videoId: 'YhblHgoxcLg', title: 'Tuesday AM Devo (ZOOM Call)', published: '2026-08-26T02:10:02+00:00' },
+    { videoId: 'nhpFttYFpwI', title: 'Servicios Dominicales', published: '2026-08-24T10:05:41+00:00' },
+    { videoId: 'lGhAh8hFsKE', title: 'Sunday Morning Service', published: '2026-08-24T07:12:34+00:00' }
+  ];
+
+  var feature = document.getElementById('watchFeature');
+  var reel = document.getElementById('watchReel');
+  if (!feature || !reel) return;
+
+  var latest = FALLBACK.slice();
+
+  function vegasNow() {
+    var parts = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'America/Los_Angeles', weekday: 'short', hour: 'numeric', hour12: false
+    }).formatToParts(new Date());
+    var out = {};
+    parts.forEach(function (p) { out[p.type] = p.value; });
+    return { day: out.weekday, hour: parseInt(out.hour, 10) };
+  }
+
+  function isServiceWindow() {
+    var now = vegasNow();
+    return now.day === 'Sun' && now.hour >= 9 && now.hour < 15;
+  }
+
+  function cleanTitle(t) {
+    return String(t || '')
+      .replace(/^Gateway City Church (Las Vegas|LV)( Español)?\s*[-–]\s*/i, '')
+      .replace(/^Gateway City Church LV Español\s*[-–]?\s*/i, '');
+  }
+
+  function age(iso) {
+    if (!iso) return '';
+    var days = Math.floor((Date.now() - new Date(iso).getTime()) / 86400000);
+    if (days < 1) return 'Today';
+    if (days === 1) return 'Yesterday';
+    if (days < 7) return days + ' days ago';
+    return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  }
+
+  function esc(s) {
+    return String(s || '').replace(/[&<>"]/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+    });
+  }
+
+  function mountFrame(src) {
+    feature.classList.add('is-playing');
+    feature.removeAttribute('href');
+    var vid = feature.querySelector('video');
+    if (vid) vid.remove();
+    var old = feature.querySelector('iframe');
+    if (old) old.remove();
+    var f = document.createElement('iframe');
+    f.src = src;
+    f.title = 'GateWay City Church Las Vegas';
+    f.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share';
+    f.allowFullscreen = true;
+    feature.appendChild(f);
+  }
+
+  var force = new URLSearchParams(location.search).get('live');
+  var live = force === '1' || (force !== '0' && isServiceWindow());
+
+  if (live) {
+    feature.classList.add('is-live');
+    mountFrame('https://www.youtube.com/embed/live_stream?channel=' + CHANNEL_ID + '&autoplay=1&mute=1');
+  } else {
+    feature.addEventListener('click', function (e) {
+      if (feature.classList.contains('is-playing')) return;
+      e.preventDefault();
+      mountFrame('https://www.youtube.com/embed/' + latest[0].videoId + '?autoplay=1');
+    });
+  }
+
+  function paint(videos) {
+    reel.innerHTML = videos.slice(0, 5).map(function (v) {
+      return '<a class="watch-card" href="https://www.youtube.com/watch?v=' + esc(v.videoId) + '" target="_blank" rel="noopener">' +
+        '<img src="https://i.ytimg.com/vi/' + esc(v.videoId) + '/hqdefault.jpg" alt="" loading="lazy">' +
+        '<div class="t">' + esc(cleanTitle(v.title)) + '</div>' +
+        '<div class="m">' + esc(age(v.published)) + '</div>' +
+      '</a>';
+    }).join('');
+  }
+
+  paint(latest);
+
+  fetch(FEED, { headers: { apikey: ANON, authorization: 'Bearer ' + ANON } })
+    .then(function (r) { if (!r.ok) throw new Error('feed ' + r.status); return r.json(); })
+    .then(function (body) {
+      var videos = Array.isArray(body.videos) ? body.videos : [];
+      if (videos.length) { latest = videos; paint(videos); }
+    })
+    .catch(function () {});
+})();
+</script>
+
+<script src="gateway-prayer-chat.js"></script>
+
+</body>
+</html>

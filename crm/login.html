@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Staff sign in · GateWay</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body class="site-body">
+<main class="house" style="padding-top:60px">
+  <img src="../assets/gateway-logo.png" alt="" style="height:56px;margin:0 auto 18px;display:block">
+  <h2 style="text-align:center">Staff sign in</h2>
+  <p class="tiny" style="text-align:center;margin-top:6px">Pastors and staff only. Congregants never need an account.</p>
+  <div class="field"><label>Email</label><input id="email" type="email" autocomplete="username"></div>
+  <div class="field"><label>Password</label><input id="password" type="password" autocomplete="current-password"></div>
+  <button class="btn btn-ink btn-full" id="btnLogin">Sign in</button>
+  <p class="tiny" id="err" style="color:var(--pray);text-align:center;margin-top:10px"></p>
+  <p class="tiny" style="text-align:center;margin-top:18px">Staff accounts are not seeded yet. Walkthrough: <a href="staff.html?preview=1">Grace people file</a> · <a href="kids.html?preview=1">Kids desk</a>.</p>
+</main>
+<script src="gcc-config.js?v=5"></script>
+<script type="module">
+  import { gccSupabase } from './auth.js';
+  const $ = (id) => document.getElementById(id);
+  if (window.GCC.DEMO_MODE) { location.href = 'staff.html'; }
+  $('btnLogin').onclick = async () => {
+    $('err').textContent = '';
+    const { error } = await gccSupabase.auth.signInWithPassword({
+      email: $('email').value.trim(), password: $('password').value
+    });
+    if (error) { $('err').textContent = error.message; return; }
+    location.href = 'staff.html';
+  };
+</script>
+</body>
+</html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sunday · GateWay City Church</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<main class="sunday">
+  <div>
+    <div class="svc" id="svcLabel">Welcome to GateWay City Church</div>
+    <h1>If you are in the room,<br>let us know you are <em>here</em>.</h1>
+    <div class="qr"><img id="qrImg" alt="Scan to check in"></div>
+    <p class="sub">Scan with your phone camera. First time, twenty seconds. Family already, one tap.</p>
+    <div class="count" id="hereCount">0</div>
+    <p class="sub">in the house today</p>
+  </div>
+</main>
+<script src="gcc-config.js?v=5"></script>
+<script src="gcc-data.js?v=5"></script>
+<script>
+(function () {
+  const C = window.GCC, D = window.GCCData;
+  const target = C.APP_URL + '?src=qr';
+  document.getElementById('qrImg').src =
+    'https://api.qrserver.com/v1/create-qr-code/?size=480x480&margin=12&data=' + encodeURIComponent(target);
+  const now = new Date();
+  const svc = C.SERVICES.find(s => s.day === now.toLocaleDateString('en-US', { weekday: 'long' }));
+  if (svc) document.getElementById('svcLabel').textContent = svc.label + ' · ' + svc.time;
+  async function tick() {
+    try { document.getElementById('hereCount').textContent = await D.todayCheckinCount(); }
+    catch (e) { console.error(e); }
+  }
+  tick();
+  setInterval(tick, 8000);
+})();
+</script>
+</body>
+</html>

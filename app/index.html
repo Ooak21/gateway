@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>GateWay · House</title>
+<meta name="theme-color" content="#F3F6F8">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="assets/gateway-logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<span class="demo-tag" id="demoTag" style="display:none">Demo Mode</span>
+<div class="house">
+  <header class="house-top">
+    <a class="brand" href="../index.html">
+      <img src="../assets/gateway-logo.png" alt="" style="height:28px">
+      <div><b>GateWay</b><span>Las Vegas</span></div>
+    </a>
+    <div class="live-pill" id="geoBanner"><i></i><span id="geoBannerText">Checking campus…</span></div>
+  </header>
+  <main>
+
+  <section class="view" id="view-home">
+    <div class="hello">
+      <div class="kicker" id="helloKicker">Welcome home</div>
+      <h1 id="helloName">House.</h1>
+    </div>
+    <article class="presence" id="presenceCard">
+      <img class="bg" src="assets/dusk-portrait.jpg" alt="">
+      <div class="shade"></div>
+      <div class="body">
+        <div class="svc" id="svcStrip"></div>
+        <h2>The valley is lighting up.</h2>
+        <p>One tap when you arrive. After that, your phone can stay in your pocket.</p>
+        <div class="row">
+          <a class="btn btn-copper" href="#checkin">I'm here</a>
+        </div>
+      </div>
+    </article>
+    <div class="grid-2">
+      <a class="quick" href="#prayer"><b>Prayer</b><span>Pastors see this today</span></a>
+      <a class="quick" href="#pastor"><b>A pastor</b><span>Danny, Paul, or Fred</span></a>
+    </div>
+    <a class="list-card" id="giveTile" href="#" target="_blank" rel="noopener" style="margin-top:12px"><h4>Give</h4><p>Online, or text GIVE to 855-783-4456.</p></a>
+  </section>
+
+  <section class="view" id="view-connect">
+    <h2>Welcome. Tell us who you are.</h2>
+    <p class="lede tiny">Twenty seconds, once. After this, everything is one tap.</p>
+    <div class="field"><label>First name</label><input id="cFirst" autocomplete="given-name"></div>
+    <div class="field"><label>Last name</label><input id="cLast" autocomplete="family-name"></div>
+    <div class="field"><label>Phone (optional)</label><input id="cPhone" type="tel" autocomplete="tel" placeholder="(702) 555-0123"></div>
+    <div class="field"><label>Email (optional)</label><input id="cEmail" type="email" autocomplete="email"></div>
+    <label class="toggle"><div><b>Text me</b><span>Service reminders and a thank-you. Opt out any time.</span></div><input type="checkbox" id="cSms"></label>
+    <button class="btn btn-ink btn-full" id="cSave">Save and continue</button>
+    <button class="btn btn-ghost btn-full" style="margin-top:10px" id="cSkip">Just browsing</button>
+  </section>
+
+  <section class="view" id="view-checkin">
+    <div class="back-row"><button class="back-btn" data-back>&larr; Home</button></div>
+    <div class="sec-kicker">Las Vegas campus</div>
+    <h2>Are you here today?</h2>
+    <p class="tiny" id="checkinGeoLine">We will confirm your location when you tap.</p>
+    <button class="btn btn-copper btn-full" style="margin-top:16px" id="btnHere">I'm here</button>
+    <div class="banner checked" id="checkedBanner" style="display:none"><span id="checkedText"></span></div>
+    <div class="list-card" id="autoWelcomeCard">
+      <div class="sec-kicker">Auto-welcome</div>
+      <p class="tiny" style="margin:6px 0 10px">Set this up once and your phone greets you when you arrive, and says goodbye when you leave.</p>
+      <div id="awBody"></div>
+    </div>
+    <div class="list-card">
+      <div class="sec-kicker">Sunday mode</div>
+      <p class="tiny" style="margin:6px 0 10px">Keep the app open during service and we log arrive and leave. GPS only runs while this page is open.</p>
+      <button class="btn btn-ghost btn-full" id="btnWatch">Start Sunday mode</button>
+      <p class="tiny" id="watchStatus" style="margin-top:8px"></p>
+    </div>
+  </section>
+
+  <section class="view" id="view-events">
+    <div class="back-row"><button class="back-btn" data-back>&larr; Home</button></div>
+    <h2>This week</h2>
+    <div id="eventList"></div>
+  </section>
+
+  <section class="view" id="view-volunteer">
+    <div class="back-row"><button class="back-btn" data-back>&larr; Home</button></div>
+    <h2>Serve</h2>
+    <p class="tiny">Pick a team and we will get you connected.</p>
+    <div id="roleList"></div>
+  </section>
+
+  <section class="view" id="view-prayer">
+    <div class="back-row"><button class="back-btn" data-back>&larr; Home</button></div>
+    <h2>How can we pray?</h2>
+    <div id="crisisBox"></div>
+    <div class="field"><label>Your request</label><textarea id="pReq" placeholder="Share what is on your heart..."></textarea></div>
+    <div class="field"><label>How should we reach you?</label><input id="pContact" placeholder="Phone or email"></div>
+    <label class="toggle"><div><b>Keep this private</b><span>Pastors only.</span></div><input type="checkbox" id="pPrivate"></label>
+    <button class="btn btn-ink btn-full" id="pSend">Send prayer request</button>
+  </section>
+
+  <section class="view" id="view-pastor">
+    <div class="back-row"><button class="back-btn" data-back>&larr; Home</button></div>
+    <h2>Reach a pastor</h2>
+    <div class="field"><label>Who</label><select id="mPastor"></select></div>
+    <div class="field"><label>Your message</label><textarea id="mMsg"></textarea></div>
+    <div class="field"><label>How should we reach you back?</label><input id="mContact" placeholder="Phone or email"></div>
+    <button class="btn btn-ink btn-full" id="mSend">Send message</button>
+  </section>
+
+  </main>
+  <nav class="tabbar">
+    <a class="tab on" href="#" data-tab="home">Home</a>
+    <a class="tab" href="#checkin" data-tab="checkin">Here</a>
+    <a class="tab" href="#events" data-tab="events">Week</a>
+    <a class="tab" href="#volunteer" data-tab="volunteer">Serve</a>
+  </nav>
+</div>
+<div class="toast" id="toast"></div>
+
+<script src="gcc-config.js?v=5"></script>
+<script src="geofence.js?v=5"></script>
+<script src="gcc-data.js?v=5"></script>
+<script>
+(function () {
+  const C = window.GCC, D = window.GCCData, Geo = window.GCCGeo;
+  const $ = (id) => document.getElementById(id);
+  const qs = new URLSearchParams(location.search);
+  const fromQr = qs.get('src') === 'qr';
+  let geoState = null;
+
+  if (C.DEMO_MODE) $('demoTag').style.display = 'block';
+  $('giveTile').href = C.GIVE_URL;
+
+  $('svcStrip').innerHTML = C.SERVICES.map(s =>
+    `<span style="margin-right:10px">${s.day} ${s.time} · ${s.label}</span>`).join('');
+
+  $('mPastor').innerHTML = C.PASTORS.map(p =>
+    `<option value="${p.id}">${p.name} · ${p.role}</option>`).join('');
+
+  const views = ['home', 'connect', 'checkin', 'events', 'volunteer', 'prayer', 'pastor'];
+  function greet() {
+    const me = D.getMe();
+    const hour = new Date().getHours();
+    $('helloKicker').textContent = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+    $('helloName').textContent = (me && me.name && me.name !== 'Guest') ? me.name.split(' ')[0] + '.' : 'House.';
+  }
+  function show(v) {
+    views.forEach(x => $('view-' + x).classList.toggle('active', x === v));
+    document.querySelectorAll('.tab').forEach(t => t.classList.toggle('on', t.dataset.tab === v || (v === 'home' && t.dataset.tab === 'home')));
+    window.scrollTo(0, 0);
+  }
+  function route() {
+    const h = location.hash.replace('#', '') || 'home';
+    if (!D.getMe() && h !== 'connect') { show('connect'); return; }
+    show(views.includes(h) ? h : 'home');
+    greet();
+    if (h === 'events') renderEvents();
+    if (h === 'volunteer') renderRoles();
+  }
+  window.addEventListener('hashchange', route);
+  document.querySelectorAll('[data-back]').forEach(b => b.onclick = () => location.hash = '');
+
+  function toast(msg) {
+    const t = $('toast'); t.textContent = msg; t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2600);
+  }
+
+  $('cSave').onclick = async () => {
+    const first = $('cFirst').value.trim();
+    if (!first) { toast('First name helps us say hello.'); return; }
+    const me = {
+      first_name: first, last_name: $('cLast').value.trim(),
+      phone: $('cPhone').value.trim(), email: $('cEmail').value.trim(),
+      sms_opt_in: $('cSms').checked, source: fromQr ? 'qr' : 'app'
+    };
+    try {
+      const rec = await D.saveMember(me);
+      D.setMe({ id: rec.id, geo_token: rec.geo_token, name: (me.first_name + ' ' + me.last_name).trim(), ...me });
+      toast('Welcome, ' + first + '.');
+      location.hash = 'checkin';
+      route();
+    } catch (e) { toast('Could not save. Try again.'); console.error(e); }
+  };
+  $('cSkip').onclick = () => {
+    D.setMe({ id: null, name: 'Guest', guest: true });
+    location.hash = ''; route();
+  };
+
+  async function refreshGeo() {
+    const b = $('geoBanner'), t = $('geoBannerText');
+    geoState = await Geo.checkOnce(C.CAMPUS);
+    if (!geoState.supported || !geoState.ok) {
+      t.textContent = fromQr ? 'Scanned' : 'Away';
+      if (fromQr) b.classList.add('on');
+      return;
+    }
+    if (geoState.inside) {
+      b.classList.add('on');
+      t.textContent = 'On campus';
+      $('checkinGeoLine').textContent = 'Location confirmed: inside the campus fence (' + geoState.distance + 'm).';
+    } else {
+      t.textContent = 'Away';
+      $('checkinGeoLine').textContent = 'You look ' + geoState.distance + 'm from campus. You can still check in if you are here and GPS is drifting.';
+    }
+  }
+
+  $('btnHere').onclick = async () => {
+    const me = D.getMe() || { id: null, name: 'Guest' };
+    const method = (geoState && geoState.ok && geoState.inside) ? 'geofence' : (fromQr ? 'qr' : 'manual');
+    try {
+      await D.checkIn({ member_id: me.id, name: me.name, method,
+        distance: geoState && geoState.distance, accuracy: geoState && geoState.accuracy });
+      $('checkedBanner').style.display = 'flex';
+      $('checkedText').textContent = 'Checked in. It is good to have you' + (me.name && me.name !== 'Guest' ? ', ' + me.name.split(' ')[0] : '') + '.';
+      $('btnHere').disabled = true; $('btnHere').textContent = 'You are checked in';
+    } catch (e) { toast('Check-in failed. Try again.'); console.error(e); }
+  };
+
+  function joinSmsHref(me) {
+    const body = encodeURIComponent(C.SMS_JOIN_KEYWORD + ' ' + me.geo_token);
+    return 'sms:' + C.SMS_LINE + '?&body=' + body;
+  }
+  function renderAutoWelcome() {
+    const me = D.getMe();
+    const body = $('awBody');
+    if (!me || me.guest || !me.geo_token) {
+      body.innerHTML = '<p class="tiny">Fill the connect card first so we know who to welcome.</p>' +
+        '<a class="btn btn-ghost" style="width:100%;margin-top:8px" href="#connect">Open connect card</a>';
+      return;
+    }
+    const welcomeLink = C.PING_URL + '?t=' + me.geo_token + '&e=enter';
+    const goodbyeLink = C.PING_URL + '?t=' + me.geo_token + '&e=exit';
+    body.innerHTML = `
+      <a class="btn btn-ink" style="width:100%" href="${joinSmsHref(me)}">1 · Text us to turn on messages</a>
+      <p class="tiny" style="margin-top:6px;margin-bottom:14px">Opens a ready-to-send text. Tap Send and you're connected.</p>
+      <button class="btn btn-ghost" style="width:100%" id="cpWelcome">2 · Copy your welcome link</button>
+      ${C.SHORTCUT_URL ? `<a class="btn btn-copper" style="width:100%;margin-top:8px" href="${C.SHORTCUT_URL}">3 · Add the Welcome shortcut, paste when asked</a>` : ''}
+      <button class="btn btn-ghost" style="width:100%;margin-top:14px" id="cpGoodbye">4 · Copy your goodbye link</button>
+      ${C.SHORTCUT_GOODBYE_URL ? `<a class="btn btn-copper" style="width:100%;margin-top:8px" href="${C.SHORTCUT_GOODBYE_URL}">5 · Add the Goodbye shortcut, paste when asked</a>` : ''}
+      <p class="tiny" style="margin-top:14px"><b>6 · Last step, in the Shortcuts app:</b><br>
+      Automation → New → <b>Arrive</b> → choose GateWay City Church → Run Immediately → pick <b>Gateway Welcome</b>.<br>
+      Repeat with <b>Leave</b> → <b>Gateway Goodbye</b>. Done forever.</p>`;
+    const cp = (id, text, n, label) => {
+      const b = document.getElementById(id);
+      if (b) b.onclick = async () => {
+        try { await navigator.clipboard.writeText(text); b.textContent = 'Copied. Now tap ' + (n + 1) + ' below'; }
+        catch { prompt('Copy your ' + label + ' link:', text); b.textContent = 'Now tap ' + (n + 1) + ' below'; }
+        setTimeout(() => { b.textContent = n + ' · Copy your ' + label + ' link'; }, 6000);
+      };
+    };
+    cp('cpWelcome', welcomeLink, 2, 'welcome');
+    cp('cpGoodbye', goodbyeLink, 4, 'goodbye');
+  }
+  renderAutoWelcome();
+  window.addEventListener('hashchange', renderAutoWelcome);
+
+  const watcher = Geo.createWatcher(C.CAMPUS, {
+    onEnter: (i) => {
+      const me = D.getMe() || { id: null, name: 'Guest' };
+      D.logGeofence('enter', { member_id: me.id, name: me.name, distance: i.distance, accuracy: i.accuracy });
+      $('watchStatus').textContent = 'Inside the fence (' + i.distance + 'm). Arrival logged.';
+    },
+    onExit: (i) => {
+      const me = D.getMe() || { id: null, name: 'Guest' };
+      D.logGeofence('exit', { member_id: me.id, name: me.name, distance: i.distance, accuracy: i.accuracy });
+      $('watchStatus').textContent = 'Outside the fence (' + i.distance + 'm). Departure logged. Thank you for coming.';
+    },
+    onUpdate: (i) => { $('watchStatus').textContent = (i.inside ? 'Inside' : 'Outside') + ' the fence, ' + i.distance + 'm out (GPS ±' + i.accuracy + 'm).'; },
+    onError: (e) => { $('watchStatus').textContent = 'GPS error: ' + e.message; }
+  });
+  $('btnWatch').onclick = () => {
+    if (watcher.active) { watcher.stop(); $('btnWatch').textContent = 'Start Sunday mode'; $('watchStatus').textContent = 'Sunday mode off.'; }
+    else if (watcher.start()) { $('btnWatch').textContent = 'Stop Sunday mode'; $('watchStatus').textContent = 'Watching the campus fence...'; }
+  };
+
+  async function renderEvents() {
+    const list = await D.listEvents();
+    const fmt = (iso) => new Date(iso).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' }) +
+      ' · ' + new Date(iso).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+    $('eventList').innerHTML = list.map(e => `
+      <div class="event-item">
+        <div class="event-date">${fmt(e.starts_at)} · ${e.category || 'Event'}</div>
+        <h4>${e.title}</h4>
+        <p>${e.description || ''}${e.location ? ' · ' + e.location : ''}</p>
+      </div>`).join('') || '<p class="muted">Nothing scheduled yet. Check back soon.</p>';
+  }
+
+  async function renderRoles() {
+    const roles = await D.listVolunteerRoles();
+    $('roleList').innerHTML = roles.map(r => `
+      <div class="role-item">
+        <h4>${r.title}</h4>
+        <p>${r.description || ''}</p>
+        <button class="btn btn-ghost" style="margin-top:10px;padding:9px 16px;font-size:13px" data-role="${r.id}" data-title="${r.title}">Count me in</button>
+      </div>`).join('');
+    $('roleList').querySelectorAll('button[data-role]').forEach(btn => {
+      btn.onclick = async () => {
+        const me = D.getMe() || {};
+        if (!me.name || me.guest) { toast('Fill the connect card first so we know who to call.'); location.hash = 'connect'; show('connect'); return; }
+        try {
+          await D.volunteerSignup({ role_id: btn.dataset.role, role_title: btn.dataset.title,
+            member_id: me.id, name: me.name, contact: me.phone || me.email || null });
+          btn.textContent = 'You are on the list'; btn.disabled = true;
+          toast('Signed up for ' + btn.dataset.title + '.');
+        } catch (e) { toast('Signup failed. Try again.'); console.error(e); }
+      };
+    });
+  }
+
+  const CRISIS_RE = /suicid|kill (myself|me)|end (my|it all)|hurt (myself|someone)|self.?harm|don'?t want to (live|be here)|overdose|take my (own )?life/i;
+  $('pSend').onclick = async () => {
+    const req = $('pReq').value.trim();
+    if (!req) { toast('Write a few words first.'); return; }
+    if (CRISIS_RE.test(req)) {
+      $('crisisBox').innerHTML = `
+        <div class="crisis-box">
+          <h4>Help is immediate.</h4>
+          <p>If you are in danger right now, call <a href="tel:911">911</a>.</p>
+          <p>To talk to someone right now, call or text <a href="tel:988">988</a>. Free, confidential, 24/7.</p>
+          <p>A pastor will also see this and reach out, but do not wait on us.</p>
+        </div>`;
+      window.scrollTo(0, 0);
+      return;
+    }
+    const me = D.getMe() || {};
+    try {
+      await D.submitPrayer({ member_id: me.id, name: me.name || 'Anonymous',
+        contact: $('pContact').value.trim() || me.phone || me.email || null,
+        request: req, is_private: $('pPrivate').checked });
+      $('pReq').value = ''; $('pContact').value = '';
+      toast('Received. Our team is praying with you.');
+      location.hash = '';
+    } catch (e) { toast('Could not send. Try again.'); console.error(e); }
+  };
+
+  $('mSend').onclick = async () => {
+    const msg = $('mMsg').value.trim(), contact = $('mContact').value.trim();
+    if (!msg) { toast('Write your message first.'); return; }
+    if (!contact) { toast('Leave a phone or email so the pastor can reach you.'); return; }
+    const me = D.getMe() || {};
+    const p = C.PASTORS.find(x => x.id === $('mPastor').value);
+    try {
+      await D.messagePastor({ member_id: me.id, pastor: p.name, name: me.name || 'Guest', contact, message: msg });
+      $('mMsg').value = ''; $('mContact').value = '';
+      toast('Sent to ' + p.name + '.');
+      location.hash = '';
+    } catch (e) { toast('Could not send. Try again.'); console.error(e); }
+  };
+
+  if ('serviceWorker' in navigator && location.protocol.startsWith('http')) {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  }
+  route();
+  refreshGeo();
+})();
+</script>
+</body>
+</html>
