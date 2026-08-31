@@ -13,7 +13,7 @@ const GRACE_VOICE = 'Ara';
 
 const GRACE_VOICE_PROMPT = `You are Grace, the AI assistant for GateWay City Church Las Vegas staff. You are on a voice call with a pastor, staff member, or kids-ministry volunteer.
 
-You can look up families, children, Sunday class attendance, pickup codes, prayer, and who is in the house by calling search_church. Whenever they ask about a person, a family, a class, who is checked in, or a pickup code, call search_church. Do not guess names from memory.
+You can look up visitors, families, children, Sunday class attendance, pickup codes, prayer requests, notes, emails, texts, and who is in the house by calling search_church. Whenever they ask about a person, a family, a class, who is checked in, a pickup code, who to follow up with, or attendance, call search_church with a clear natural-language version of their question. Do not guess those facts from memory.
 
 You also know the Bible. Scripture and theology questions you answer directly. Do not call search_church for those.
 
@@ -83,18 +83,35 @@ Deno.serve(async (req) => {
   }
 
   if (action === 'search') {
-    const url = Deno.env.get('SUPABASE_URL') + '/functions/v1/gcc-ops';
-    const r = await fetch(url, {
+    // Full Grace brain first (visitors + families + Bible, via gcc-grace
+    // nlsearch); fall back to gcc-ops keyword search if the AI path fails,
+    // so voice never goes dark.
+    const base = Deno.env.get('SUPABASE_URL') + '/functions/v1/';
+    const headers = {
+      'Content-Type': 'application/json',
+      Authorization: req.headers.get('Authorization') || '',
+      apikey: Deno.env.get('SUPABASE_ANON_KEY') || '',
+    };
+    const campus = body.campus || 'lasvegas';
+    const query = body.query || '';
+
+    const r = await fetch(base + 'gcc-grace', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: req.headers.get('Authorization') || '',
-        apikey: Deno.env.get('SUPABASE_ANON_KEY') || '',
-      },
-      body: JSON.stringify({ action: 'search', campus: body.campus || 'lasvegas', query: body.query || '' }),
+      headers,
+      body: JSON.stringify({ action: 'nlsearch', campus, query }),
     });
-    const data = await r.json().catch(() => ({}));
-    return json(data, r.status);
+    if (r.ok) {
+      const data = await r.json().catch(() => ({}));
+      if (data?.explanation) return json({ ok: true, spoken: data.explanation, ids: data.ids ?? [] });
+    }
+
+    const fb = await fetch(base + 'gcc-ops', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ action: 'search', campus, query }),
+    });
+    const data = await fb.json().catch(() => ({}));
+    return json(data, fb.status);
   }
 
   return json({ error: 'unknown action' }, 400);
