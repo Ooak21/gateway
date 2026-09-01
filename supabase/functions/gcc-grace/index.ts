@@ -123,9 +123,12 @@ async function buildSearchContext(campusSlug: string) {
   if (!visitors) return null;
   const visitorIds = visitors.map((v) => v.id);
 
+  const houseToday = new Date().toLocaleDateString('en-CA', { timeZone: 'America/Los_Angeles' });
+
   const [
     { data: emails }, { data: threads }, { data: allNotes }, { data: allAttendance },
-    { data: families }, { data: checkins }, { data: classes }, { data: kidMembers },
+    { data: families }, { data: checkins }, { data: classes }, { data: members },
+    { data: serviceToday }, { data: roles }, { data: signups },
   ] = await Promise.all([
     supabase.from('church_email_log').select('*').in('visitor_id', visitorIds.length ? visitorIds : ['00000000-0000-0000-0000-000000000000']),
     supabase.from('church_sms_threads').select('*').eq('campus_slug', campusSlug),
@@ -134,8 +137,12 @@ async function buildSearchContext(campusSlug: string) {
     supabase.from('church_families').select('id, name').eq('campus_slug', campusSlug),
     supabase.from('church_class_checkins').select('child_id, class_id, pickup_code').eq('campus_slug', campusSlug).is('checked_out_at', null),
     supabase.from('church_classes').select('id, name').eq('campus_slug', campusSlug),
-    supabase.from('church_members').select('id, first_name, last_name').eq('campus_slug', campusSlug),
+    supabase.from('church_members').select('id, first_name, last_name, phone, email').eq('campus_slug', campusSlug),
+    supabase.from('church_attendance').select('display_name, method').eq('campus_slug', campusSlug).eq('service_date', houseToday),
+    supabase.from('church_volunteer_roles').select('title, description, slots, active').eq('campus_slug', campusSlug),
+    supabase.from('church_volunteer_signups').select('role_title, display_name, contact, note').eq('campus_slug', campusSlug),
   ]);
+  const kidMembers = members;
 
   const threadIds = (threads ?? []).map((t) => t.id);
   const { data: allSms } = threadIds.length > 0
@@ -185,7 +192,21 @@ async function buildSearchContext(campusSlug: string) {
     })),
   };
 
-  return [...profiles, { type: 'kids_desk', ...kidsContext }];
+  const rosterContext = {
+    type: 'church_roster',
+    members_on_file: (members ?? []).map((m) => ({
+      name: `${m.first_name ?? ''} ${m.last_name ?? ''}`.trim(),
+      phone: m.phone ?? null,
+      email: m.email ?? null,
+    })),
+    in_the_house_today: (serviceToday ?? []).map((a) => ({ name: a.display_name, method: a.method })),
+    serve_team: {
+      roles: (roles ?? []).map((r) => ({ role: r.title, description: r.description ?? null, slots: r.slots ?? null, active: r.active })),
+      signups: (signups ?? []).map((s) => ({ role: s.role_title, person: s.display_name, contact: s.contact ?? null, note: s.note ?? null })),
+    },
+  };
+
+  return [...profiles, { type: 'kids_desk', ...kidsContext }, rosterContext];
 }
 
 function visitorContextOf(v: Record<string, unknown>, churchName: string) {
