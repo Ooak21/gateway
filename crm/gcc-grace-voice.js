@@ -100,7 +100,7 @@
             session: {
               voice: tok.voice || 'Ara',
               instructions: tok.instructions || PROMPT,
-              turn_detection: { type: 'server_vad', threshold: 0.65, prefix_padding_ms: 300, silence_duration_ms: 500 },
+              turn_detection: { type: 'server_vad', threshold: 0.4, prefix_padding_ms: 300, silence_duration_ms: 500 },
               audio: {
                 input: { format: { type: 'audio/pcm', rate: 24000 } },
                 output: { format: { type: 'audio/pcm', rate: 24000 } }
