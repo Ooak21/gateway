@@ -52,7 +52,7 @@ V.usePreview(preview);
 if (session.access_token) V.setAuth(session.access_token);
 
 let filter = 'all', query = '', selected = null, people = [];
-let famSelected = null, kidSelected = null, autoSelected = null, visSelected = null, visInsight = null;
+let famSelected = null, kidSelected = null, autoSelected = null, visSelected = null, visInsight = null, visTab = 'activity';
 
 const today = () => new Date().toLocaleDateString('en-CA', { timeZone: 'America/Los_Angeles' });
 const ago = (iso) => {
@@ -391,7 +391,9 @@ function renderAutoFile() {
 
 // ---------- Visitors (Grace CRM) ----------
 
-const HOW_HEARD = { friend: 'A friend', social_media: 'Social media', google: 'Google', drove_by: 'Driving by', other: 'Word of mouth' };
+const HOW_HEARD = { friend: 'A friend', social_media: 'Social media', google: 'Google', drove_by: 'Driving by', walked_by: 'Walked by', other: 'Word of mouth' };
+const EMAIL_LABEL = { welcome_1: 'Welcome', welcome: 'Welcome', followup_2: 'Follow-up 2', followup_3: 'Follow-up 3', manual: 'Email' };
+const emailLabel = (t) => EMAIL_LABEL[t] || String(t || 'Email').replace(/_/g, ' ');
 const NOTE_TAGS = ['', 'first-time', 'needs-follow-up', 'connected-with-pastor', 'prayer-request', 'new-believer', 'volunteer-interest'];
 
 function visitorList() {
@@ -422,6 +424,7 @@ function renderVisitorList() {
     btn.onclick = () => {
       visSelected = V.data().visitors.find((v) => v.id === btn.dataset.vid);
       visInsight = null;
+      visTab = 'activity';
       renderVisitorList();
       renderVisitorFile();
     };
@@ -462,65 +465,117 @@ function renderVisitorFile() {
   const v = visSelected;
   if (!v) { $('file').innerHTML = '<p class="ops-empty">Select a visitor, or add one.</p>'; return; }
   const rel = V.forVisitor(v.id);
-  const emailsSorted = rel.emails.slice().sort((a, b) => (b.sent_at || '').localeCompare(a.sent_at || ''));
-  $('file').innerHTML = `
-    <p class="tiny">${v.is_returning ? 'Returning visitor' : 'First-time visitor'} · first came ${esc((v.created_at || '').slice(0, 10))}</p>
-    <h1>${esc(v.name)}</h1>
-    <dl class="facts">
-      <div><dt>Phone</dt><dd>${esc(v.phone) || '—'}</dd></div>
-      <div><dt>Email</dt><dd>${esc(v.email) || '—'}</dd></div>
-      <div><dt>Service</dt><dd>${v.service_preference === 'spanish' ? 'Spanish' : 'English'}</dd></div>
-      <div><dt>Heard through</dt><dd>${esc(HOW_HEARD[v.how_heard] || v.how_heard) || '—'}</dd></div>
-      <div><dt>Visits</dt><dd>${rel.attendance.length}</dd></div>
-      <div><dt>SMS</dt><dd>${v.opted_out ? 'Opted out' : 'OK to text'}</dd></div>
-    </dl>
-    ${v.prayer_request ? `<div class="ops-block"><h3>Prayer request</h3><p>${esc(v.prayer_request)}</p></div>` : ''}
-    <div class="ops-block">
-      <h3>Grace's read</h3>
-      ${visInsight ? `<p>${esc(visInsight)}</p>` : '<p class="tiny">Ask Grace for a pastoral snapshot of this visitor.</p>'}
-      <button class="btn btn-ghost" id="visInsightBtn" style="margin-top:8px">${visInsight ? 'Refresh' : 'Get insight'}</button>
+  const first = (v.name || '').split(' ')[0] || 'them';
+  const attSorted = rel.attendance.slice().sort((a, b) => (b.visited_at || '').localeCompare(a.visited_at || ''));
+  const lastVisit = attSorted.length ? attSorted[0].visited_at : v.last_activity_at;
+  const hasPrayer = !!v.prayer_request || rel.notes.some((n) => n.tag === 'prayer-request');
+
+  // Prayer list for the rail: primary request + any prayer-tagged notes
+  const prayers = [];
+  if (v.prayer_request) prayers.push({ body: v.prayer_request, at: v.created_at, src: 'from registration' });
+  rel.notes.filter((n) => n.tag === 'prayer-request').forEach((n) => prayers.push({ body: n.body, at: n.created_at, src: 'note' }));
+
+  // ACTIVITY timeline: emails + visits + notes + prayer, newest first
+  const tl = [];
+  rel.emails.forEach((e) => tl.push({ at: e.sent_at, dot: 'email', title: `Email sent: ${emailLabel(e.email_type)}${e.subject ? ' · ' + e.subject : ''}`, meta: e.opened_at ? 'opened' : 'sent' }));
+  attSorted.forEach((a) => tl.push({ at: a.visited_at, dot: 'visit', title: `${a.service_type === 'spanish' ? 'Spanish' : 'English'} Service`, meta: '' }));
+  rel.notes.forEach((n) => tl.push({ at: n.created_at, dot: n.tag === 'prayer-request' ? 'prayer' : 'note', title: n.body, tag: n.tag || '' }));
+  if (v.prayer_request) tl.push({ at: v.created_at, dot: 'prayer', title: `✝ ${v.prayer_request}`, meta: 'from registration' });
+  tl.sort((a, b) => (b.at || '').localeCompare(a.at || ''));
+
+  const fmtDate = (iso) => (iso || '').slice(0, 10);
+  const fmtTime = (iso) => {
+    if (!iso) return '';
+    const d = new Date(iso);
+    return d.toLocaleString('en-US', { timeZone: 'America/Los_Angeles', month: 'numeric', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' });
+  };
+
+  const activityPanel = `<ul class="vis-tl">${tl.map((t) => `
+      <li><span class="dot ${t.dot}"></span><div>
+        <div class="t-title">${t.tag ? `<span class="vis-tag">${esc(t.tag)}</span>` : ''}${esc(t.title)}</div>
+        <div class="t-meta">${fmtTime(t.at)}${t.meta ? ' · ' + esc(t.meta) : ''}</div>
+      </div></li>`).join('') || '<li class="tiny" style="color:var(--mute)">Nothing logged yet.</li>'}</ul>`;
+
+  const messagesPanel = `
+    <div class="hello-log" style="max-height:260px;overflow:auto;margin-top:14px">
+      ${rel.messages.map((m) => `<div class="hello-row ${m.direction === 'inbound' ? 'me' : 'house'}"><span class="who">${m.direction === 'inbound' ? esc(first) : 'Pastor'}</span>${esc(m.body)}</div>`).join('') || '<p class="tiny">No texts yet.</p>'}
     </div>
-    <div class="ops-block">
-      <h3>Texts</h3>
-      <div class="hello-log" style="max-height:220px;overflow:auto">
-        ${rel.messages.map((m) => `<div class="hello-row ${m.direction === 'inbound' ? 'me' : 'house'}"><span class="who">${m.direction === 'inbound' ? esc(v.name.split(' ')[0]) : 'Pastor'}</span>${esc(m.body)}</div>`).join('') || '<p class="tiny">No texts yet.</p>'}
-      </div>
+    <div class="hello-form" style="margin-top:8px">
+      <textarea id="visSmsBody" placeholder="Text ${esc(first)}..."></textarea>
+      <button class="btn btn-ghost" id="visSmsSuggest">Suggest</button>
+      <button class="btn btn-ink" id="visSmsSend">Send text</button>
+    </div>
+    <div class="vis-sec"><h4>Send an email</h4>
+      <div class="desk-form"><input id="visEmailSubject" placeholder="Subject"><button class="btn btn-ghost" id="visEmailSuggest">Suggest</button></div>
       <div class="hello-form" style="margin-top:8px">
-        <textarea id="visSmsBody" placeholder="Text ${esc(v.name.split(' ')[0])}..."></textarea>
-        <button class="btn btn-ghost" id="visSmsSuggest">Suggest</button>
-        <button class="btn btn-ink" id="visSmsSend">Send</button>
+        <textarea id="visEmailBody" placeholder="Write to ${esc(first)}..."></textarea>
+        <button class="btn btn-ink" id="visEmailSend">Send email</button>
       </div>
-    </div>
-    <div class="ops-block">
-      <h3>Email</h3>
-      ${emailsSorted.slice(0, 5).map((e) => `<p class="tiny">${esc((e.sent_at || '').slice(0, 10))} · ${esc(e.email_type)}${e.subject ? ' · ' + esc(e.subject) : ''} · ${e.opened_at ? 'opened' : 'sent'}</p>`).join('') || '<p class="tiny">Nothing sent yet.</p>'}
-      <div class="desk-form" style="margin-top:8px">
-        <input id="visEmailSubject" placeholder="Subject">
-        <button class="btn btn-ghost" id="visEmailSuggest">Suggest</button>
-      </div>
-      <div class="hello-form" style="margin-top:8px">
-        <textarea id="visEmailBody" placeholder="Write to ${esc(v.name.split(' ')[0])}..."></textarea>
-        <button class="btn btn-ink" id="visEmailSend">Send</button>
-      </div>
-    </div>
-    <div class="ops-block">
-      <h3>Notes</h3>
-      ${rel.notes.map((n) => `<p>${esc(n.body)}${n.tag ? ' <span class="mark-pray">' + esc(n.tag) + '</span>' : ''} <span class="tiny">${ago(n.created_at)}</span></p>`).join('') || '<p class="tiny">No notes.</p>'}
-      <div class="desk-form" style="margin-top:8px">
-        <input id="visNoteBody" placeholder="Add a note">
-        <select id="visNoteTag">${NOTE_TAGS.map((t) => `<option value="${t}">${t || 'no tag'}</option>`).join('')}</select>
-        <button class="btn btn-ink" id="visNoteAdd">Add</button>
-      </div>
-    </div>
-    <div class="ops-block">
-      <h3>Visits</h3>
-      ${rel.attendance.slice(0, 8).map((a) => `<p>${esc((a.visited_at || '').slice(0, 10))} · ${a.service_type === 'spanish' ? 'Spanish' : 'English'}</p>`).join('') || '<p class="tiny">No visits logged.</p>'}
-      <button class="btn btn-ghost" id="visCheckin" style="margin-top:8px">They're here today</button>
-    </div>
-    <div class="ops-block">
-      <h3>Remove</h3>
-      <button class="btn btn-ghost" id="visDelete">Delete this visitor</button>
     </div>`;
+
+  const notesPanel = `
+    <div style="margin-top:14px">
+      ${rel.notes.map((n) => `<div class="vis-note"><div>${n.tag ? `<span class="vis-tag">${esc(n.tag)}</span>` : ''}${esc(n.body)}</div><div class="t-meta">${fmtTime(n.created_at)}</div></div>`).join('') || '<p class="tiny">No notes yet.</p>'}
+    </div>
+    <div class="desk-form" style="margin-top:10px">
+      <input id="visNoteBody" placeholder="Add a note">
+      <select id="visNoteTag">${NOTE_TAGS.map((t) => `<option value="${t}">${t || 'no tag'}</option>`).join('')}</select>
+      <button class="btn btn-ink" id="visNoteAdd">Add</button>
+    </div>`;
+
+  const panel = visTab === 'messages' ? messagesPanel : visTab === 'notes' ? notesPanel : activityPanel;
+
+  $('file').innerHTML = `
+    <div class="vis-head">
+      <div>
+        <h1>${esc(v.name)}</h1>
+        <div class="vis-badges">
+          <span class="vis-badge ${v.is_returning ? 'ret' : ''}">${v.is_returning ? 'Returning' : 'First time'}</span>
+          ${hasPrayer ? '<span class="vis-badge pray">Prayer</span>' : ''}
+        </div>
+      </div>
+      <div class="vis-actions">
+        <button class="btn btn-ghost" id="visCheckin">+ Log visit</button>
+        <button class="btn btn-ghost" id="visDelete">Delete</button>
+      </div>
+    </div>
+
+    <div class="vis-cols">
+      <div class="vis-rail">
+        <div class="vis-sec"><h4>Contact</h4>
+          <div class="vis-kv"><span>Email</span><span>${esc(v.email) || '—'}</span></div>
+          <div class="vis-kv"><span>Phone</span><span>${esc(v.phone) || '—'}</span></div>
+          <div class="vis-kv"><span>Texting</span><span>${v.opted_out ? 'Opted out' : 'OK to text'}</span></div>
+        </div>
+        <div class="vis-sec"><h4>Details</h4>
+          <div class="vis-kv"><span>Visits</span><span>${rel.attendance.length}</span></div>
+          <div class="vis-kv"><span>Service</span><span>${v.service_preference === 'spanish' ? 'Spanish' : 'English'}</span></div>
+          <div class="vis-kv"><span>Found us via</span><span>${esc(HOW_HEARD[v.how_heard] || v.how_heard) || '—'}</span></div>
+          <div class="vis-kv"><span>Emails sent</span><span>${rel.emails.length}</span></div>
+          <div class="vis-kv"><span>First visit</span><span>${fmtDate(v.created_at) || '—'}</span></div>
+          <div class="vis-kv"><span>Last visit</span><span>${fmtDate(lastVisit) || '—'}</span></div>
+        </div>
+        <div class="vis-sec"><h4>Pastoral snapshot <button class="linklike" id="visInsightBtn">${visInsight ? 'Refresh' : '✦ Generate'}</button></h4>
+          ${visInsight ? `<p style="font-size:14px">${esc(visInsight)}</p>` : '<p class="tiny">Click generate for a pastoral snapshot.</p>'}
+        </div>
+        <div class="vis-sec"><h4>Prayer requests</h4>
+          ${prayers.map((p) => `<div class="vis-prayer"><div>${esc(p.body)}</div><div class="t-meta">${fmtDate(p.at)} · ${esc(p.src)}</div></div>`).join('') || '<p class="tiny">No prayer requests.</p>'}
+        </div>
+      </div>
+
+      <div class="vis-main">
+        <div class="vis-tabs">
+          <button class="vis-tab ${visTab === 'activity' ? 'on' : ''}" data-vt="activity">Activity</button>
+          <button class="vis-tab ${visTab === 'messages' ? 'on' : ''}" data-vt="messages">Messages</button>
+          <button class="vis-tab ${visTab === 'notes' ? 'on' : ''}" data-vt="notes">Notes${rel.notes.length ? ` (${rel.notes.length})` : ''}</button>
+        </div>
+        <div class="vis-panel">${panel}</div>
+      </div>
+    </div>`;
+
+  document.querySelectorAll('.vis-tab').forEach((b) => {
+    b.onclick = () => { visTab = b.dataset.vt; renderVisitorFile(); };
+  });
 
   $('visInsightBtn').onclick = async () => {
     $('visInsightBtn').textContent = 'Thinking...';
@@ -531,7 +586,7 @@ function renderVisitorFile() {
     renderVisitorFile();
   };
 
-  $('visSmsSuggest').onclick = async () => {
+  if ($('visSmsSuggest')) $('visSmsSuggest').onclick = async () => {
     $('visSmsSuggest').textContent = '...';
     try {
       const recent = rel.messages.slice(-6).map((m) => ({ direction: m.direction, body: m.body }));
@@ -541,7 +596,7 @@ function renderVisitorFile() {
     $('visSmsSuggest').textContent = 'Suggest';
   };
 
-  $('visSmsSend').onclick = async () => {
+  if ($('visSmsSend')) $('visSmsSend').onclick = async () => {
     const text = $('visSmsBody').value.trim();
     if (!text) return;
     $('visSmsSend').textContent = 'Sending...';
@@ -552,7 +607,7 @@ function renderVisitorFile() {
     } catch (e) { $('visSmsSend').textContent = 'Failed'; console.warn(e); }
   };
 
-  $('visEmailSuggest').onclick = async () => {
+  if ($('visEmailSuggest')) $('visEmailSuggest').onclick = async () => {
     $('visEmailSuggest').textContent = '...';
     try {
       const r = await V.suggestReply(v.id, 'email', []);
@@ -562,7 +617,7 @@ function renderVisitorFile() {
     $('visEmailSuggest').textContent = 'Suggest';
   };
 
-  $('visEmailSend').onclick = async () => {
+  if ($('visEmailSend')) $('visEmailSend').onclick = async () => {
     const subject = $('visEmailSubject').value.trim();
     const bodyText = $('visEmailBody').value.trim();
     if (!subject || !bodyText) return;
@@ -574,7 +629,7 @@ function renderVisitorFile() {
     } catch (e) { $('visEmailSend').textContent = 'Failed'; console.warn(e); }
   };
 
-  $('visNoteAdd').onclick = async () => {
+  if ($('visNoteAdd')) $('visNoteAdd').onclick = async () => {
     const bodyText = $('visNoteBody').value.trim();
     if (!bodyText) return;
     await V.addNote(v.id, bodyText, $('visNoteTag').value || null);

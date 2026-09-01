@@ -582,6 +582,41 @@ p{margin:0}
 .ops-empty{color:var(--mute);font-size:14px;padding:48px 16px;text-align:center}
 .mark-here{color:var(--live);font-weight:700;font-size:11px}
 .mark-pray{color:var(--pray);font-weight:700;font-size:11px}
+
+/* Visitor file: 3-column profile (rail + tabbed timeline), light palette */
+.vis-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.vis-head h1{margin:0}
+.vis-badges{display:flex;gap:8px;align-items:center;margin-top:10px}
+.vis-badge{font-size:11px;font-weight:700;letter-spacing:.03em;text-transform:uppercase;padding:4px 11px;border-radius:999px;background:var(--snow);color:var(--ink-soft)}
+.vis-badge.ret{background:var(--copper-wash);color:var(--navy)}
+.vis-badge.pray{background:#F6E7E7;color:var(--pray)}
+.vis-actions{display:flex;gap:8px}
+.vis-cols{display:grid;grid-template-columns:284px 1fr;gap:34px;margin-top:24px;align-items:start}
+.vis-rail{display:flex;flex-direction:column}
+.vis-sec{border-top:1px solid var(--line);padding:16px 0}
+.vis-sec:first-child{border-top:0;padding-top:2px}
+.vis-sec h4{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--mute);margin:0 0 10px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.vis-kv{display:flex;justify-content:space-between;gap:12px;font-size:14px;padding:3px 0}
+.vis-kv span:first-child{color:var(--mute)}
+.vis-kv span:last-child{color:var(--ink);font-weight:500;text-align:right;word-break:break-word}
+.vis-prayer,.vis-note{padding:8px 0}
+.vis-prayer div:first-child,.vis-note div:first-child{font-size:14px;color:var(--ink)}
+.linklike{background:none;border:0;color:var(--navy);font-weight:700;font-size:11px;letter-spacing:.03em;cursor:pointer;padding:0}
+.vis-tabs{display:flex;gap:24px;border-bottom:1px solid var(--line)}
+.vis-tab{background:none;border:0;padding:10px 0;font-size:12px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--mute);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px}
+.vis-tab.on{color:var(--navy);border-bottom-color:var(--navy)}
+.vis-tl{list-style:none;margin:0;padding:16px 0 0}
+.vis-tl li{display:grid;grid-template-columns:12px 1fr;gap:14px;padding:0 0 20px;position:relative}
+.vis-tl li::before{content:'';position:absolute;left:5px;top:15px;bottom:-5px;width:1px;background:var(--line)}
+.vis-tl li:last-child::before{display:none}
+.vis-tl .dot{width:11px;height:11px;border-radius:50%;margin-top:3px;background:var(--mute)}
+.vis-tl .dot.visit{background:var(--navy)}
+.vis-tl .dot.email{background:#C0862E}
+.vis-tl .dot.prayer{background:var(--pray)}
+.vis-tl .t-title{font-size:14px;color:var(--ink)}
+.t-meta{font-size:12px;color:var(--mute);margin-top:2px}
+.vis-tag{display:inline-block;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.03em;color:var(--ink-soft);background:var(--snow);border-radius:5px;padding:2px 6px;margin-right:6px;vertical-align:middle}
+@media (max-width:1040px){ .vis-cols{grid-template-columns:1fr;gap:8px} }
 @media (max-width:860px){
   .ops-body{grid-template-columns:1fr}
   .ops-list{min-height:40vh}
