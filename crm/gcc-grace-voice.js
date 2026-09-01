@@ -51,7 +51,10 @@
       let mic;
       try {
         mic = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } });
-      } catch {
+        const trk = mic.getAudioTracks()[0];
+        console.log('[grace-voice] mic acquired:', trk && trk.label, '| enabled:', trk && trk.enabled, '| muted:', trk && trk.muted);
+      } catch (err) {
+        console.error('[grace-voice] mic denied/failed:', err && err.name, err && err.message);
         return 'Allow microphone access, or type to Grace instead.';
       }
       this.mic = mic;
@@ -90,6 +93,7 @@
       const playHead = { t: ctx.currentTime };
       ws.onmessage = async (m) => {
         let e; try { e = JSON.parse(m.data); } catch { return; }
+        if (e.type === 'error') { console.error('[grace-voice] xAI error:', JSON.stringify(e.error || e)); }
         if (e.type === 'session.created') {
           sendWs(ws, {
             type: 'session.update',
@@ -113,8 +117,9 @@
         if (e.type === 'session.updated') {
           sendWs(ws, { type: 'response.create', response: { instructions: 'Greet the staff member in one short sentence and ask what they need.' } });
         }
-        if (e.type === 'input_audio_buffer.speech_started') { self.state = 'listening'; if (self.onState) self.onState('listening'); }
-        if (e.type === 'response.created') { self.state = 'speaking'; if (self.onState) self.onState('speaking'); }
+        if (e.type === 'input_audio_buffer.speech_started') { console.log('[grace-voice] heard you (speech_started)'); self.state = 'listening'; if (self.onState) self.onState('listening'); }
+        if (e.type === 'input_audio_buffer.committed') console.log('[grace-voice] turn committed, waiting for reply');
+        if (e.type === 'response.created') { console.log('[grace-voice] Grace responding'); self.state = 'speaking'; if (self.onState) self.onState('speaking'); }
         if (e.type === 'response.function_call_arguments.done' && e.name === 'search_church') {
           let q = '';
           try { q = JSON.parse(e.arguments || '{}').query || ''; } catch {}
