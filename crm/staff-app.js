@@ -483,7 +483,7 @@ function renderVisitorFile() {
   if (v.prayer_request) tl.push({ at: v.created_at, dot: 'prayer', title: `✝ ${v.prayer_request}`, meta: 'from registration' });
   tl.sort((a, b) => (b.at || '').localeCompare(a.at || ''));
 
-  const fmtDate = (iso) => (iso || '').slice(0, 10);
+  const fmtDate = (iso) => iso ? new Date(iso).toLocaleDateString('en-CA', { timeZone: 'America/Los_Angeles' }) : '';
   const fmtTime = (iso) => {
     if (!iso) return '';
     const d = new Date(iso);
