@@ -90,6 +90,17 @@ async function handleVisitorMessage(
   }
 }
 
+// imc_escrow_listings stores phones in mixed formats (bare 10-digit, +1 E.164).
+async function isImcEscrowParty(from: string): Promise<boolean> {
+  const digits = from.replace(/\D/g, '');
+  const ten = digits.length === 11 && digits.startsWith('1') ? digits.slice(1) : digits;
+  const variants = [...new Set([from, digits, ten, `+${digits}`, `+1${ten}`])];
+  const filter = variants.map((p) => `seller_phone.eq.${p},buyer_phone.eq.${p}`).join(',');
+  const { data } = await supabase.from('imc_escrow_listings')
+    .select('id').or(filter).eq('status', 'funded').limit(1);
+  return !!data?.length;
+}
+
 Deno.serve(async (req) => {
   const body = await req.json().catch(() => ({}));
   const from = (body.from_number || '').trim();
@@ -101,6 +112,21 @@ Deno.serve(async (req) => {
   const ourLine = (Deno.env.get('SENDBLUE_FROM_NUMBER') || '').replace(/\D/g, '');
   if (body.is_outbound === true) return Response.json({ ok: true });
   if (ourLine && from.replace(/\D/g, '') === ourLine) return Response.json({ ok: true });
+
+  // IMC escrow shares this Sendblue line. A sender who is a party to a
+  // funded IMC escrow is texting a confirmation code, not the church: hand
+  // the message to imc-escrow-sms and send no church reply.
+  if (await isImcEscrowParty(from)) {
+    await fetch(`${Deno.env.get('SUPABASE_URL')}/functions/v1/imc-escrow-sms`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}`,
+      },
+      body: JSON.stringify({ action: 'INBOUND_SMS', from, text: content }),
+    }).catch((e) => console.error('[GCC inbound] IMC forward failed', e));
+    return Response.json({ ok: true, routed: 'imc' });
+  }
 
   const upper = content.toUpperCase();
 
