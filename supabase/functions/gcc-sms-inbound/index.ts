@@ -21,6 +21,7 @@
 
 import { sendSms, smsFromNumber, supabase } from '../_shared/gcc.ts';
 import { analyzeUrgency } from '../_shared/grace.ts';
+import { verifySendblueWebhook } from '../_shared/sendblueAuth.ts';
 
 const WELCOME_ABOARD =
   "You're in! This is GateWay City Church. We'll text you a welcome when you join us and a goodbye when you head out. Reply STOP any time to opt out.";
@@ -102,10 +103,20 @@ async function isImcEscrowParty(from: string): Promise<boolean> {
 }
 
 Deno.serve(async (req) => {
+  if (req.method !== 'POST') return Response.json({ error: 'method not allowed' }, { status: 405 });
+  const secret = Deno.env.get('SENDBLUE_WEBHOOK_SECRET') || '';
+  if (!secret) return Response.json({ error: 'webhook authentication not configured' }, { status: 503 });
+  if (!await verifySendblueWebhook(req, secret)) {
+    return Response.json({ error: 'unauthorized' }, { status: 401 });
+  }
   const body = await req.json().catch(() => ({}));
-  const from = (body.from_number || '').trim();
-  const content = (body.content || '').trim();
-  if (!from || !content) return Response.json({ ok: true });
+  const rawFrom = typeof body.from_number === 'string' ? body.from_number.trim() : '';
+  const content = typeof body.content === 'string' ? body.content.trim() : '';
+  if (!/^\+?[1-9]\d{7,14}$/.test(rawFrom) || content.length > 16000) {
+    return Response.json({ error: 'invalid message' }, { status: 400 });
+  }
+  const from = '+' + rawFrom.replace(/\D/g, '');
+  if (!content) return Response.json({ ok: true });
 
   // Sendblue posts OUTBOUND status callbacks to the same receive webhook.
   // Without this guard we would reply to our own sends in a loop.
